@@ -1,0 +1,9 @@
+POST http://localhost:4000/nuscoursechat/signup
+Content-Type: application/json
+
+{
+ "fullname":"Changyang Yu",
+ "username":"Mackenzie",
+ "email":"mackenzieyu257@gmail.com",
+ "password":"123456"
+}
