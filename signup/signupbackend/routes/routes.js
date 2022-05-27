@@ -9,9 +9,10 @@ router.post('/signup', (request, response) => {
 
   const signedUpUser = new signUpTemplateCopy({
     fullName: request.body.fullName,
-    username: request.body.username,
+    userName: request.body.userName,
     email: request.body.email,
     password: request.body.password,
+    courseEnrolled: request.body.courseEnrolled,
   })
   signedUpUser
     .save()

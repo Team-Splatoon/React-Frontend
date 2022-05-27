@@ -1,11 +1,11 @@
 const mongoose = require('mongoose')
 
 const signUpTemplate = new mongoose.Schema({
-  fullname: {
+  fullName: {
     type: String,
     requred: true,
   },
-  username: {
+  userName: {
     type: String,
     required: true,
   },
@@ -20,6 +20,10 @@ const signUpTemplate = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now,
+  },
+  courseEnrolled: {
+    type: Array,
+    required: true,
   },
 })
 

@@ -7,14 +7,16 @@ class App extends Component {
     super()
     this.state = {
       fullname: '',
-      username: '',
+      userName: '',
       email: '',
       password: '',
+      courseEnrolled: [],
     }
     this.changeFullName = this.changeFullName.bind(this)
     this.changeUsername = this.changeUsername.bind(this)
     this.changeEmail = this.changeEmail.bind(this)
     this.changePassword = this.changePassword.bind(this)
+    this.changeCourseEnrolled = this.changeCourseEnrolled.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
   }
 
@@ -26,7 +28,7 @@ class App extends Component {
 
   changeUsername(event) {
     this.setState({
-      username: event.target.value,
+      userName: event.target.value,
     })
   }
 
@@ -42,14 +44,21 @@ class App extends Component {
     })
   }
 
+  changeCourseEnrolled(event) {
+    this.setState({
+      courseEnrolled: event.target.value,
+    })
+  }
+
   onSubmit(event) {
     event.preventDefault()
 
     const registered = {
-      fullname: this.state.fullname,
-      username: this.state.username,
+      fullName: this.state.fullName,
+      userName: this.state.userName,
       email: this.state.email,
       password: this.state.password,
+      courseEnrolled: this.state.courseEnrolled,
     }
 
     axios
@@ -57,10 +66,11 @@ class App extends Component {
       .then((response) => console.log(response.data))
 
     this.setState({
-      fullname: '',
-      username: '',
+      fullName: '',
+      userName: '',
       email: '',
       password: '',
+      courseEnrolled: [],
     })
   }
 
@@ -82,7 +92,7 @@ class App extends Component {
                 type='text'
                 placeholder='Username'
                 onChange={this.changeUsername}
-                value={this.state.username}
+                value={this.state.userName}
                 className='form-control form-group'
               />
 
@@ -99,6 +109,14 @@ class App extends Component {
                 placeholder='Password'
                 onChange={this.changePassword}
                 value={this.state.password}
+                className='form-control form-group'
+              />
+
+              <input
+                type='text'
+                placeholder='Course Enrolled'
+                onChange={this.changeCourseEnrolled}
+                value={this.state.courseEnrolled}
                 className='form-control form-group'
               />
 
