@@ -130,7 +130,7 @@ function Signup() {
           />
           <button type='submit'>Create User</button>
           <span>
-            Already have an account? <Link to='/login'> Login</Link>
+            Already have an account ? <Link to='/login'> Login</Link>
           </span>
         </form>
       </FormContainer>
@@ -155,7 +155,6 @@ const FormContainer = styled.div`
     justify-content: center;
     h1 {
       color: white;
-      text-transform: uppercase;
     }
   }
   form {
