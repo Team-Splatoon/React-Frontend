@@ -22,6 +22,13 @@ function Login() {
     email: '',
     password: '',
   })
+
+  // useEffect(() => {
+  //   if (localStorage.getItem('chat-app-user')) {
+  //     navigate('/')
+  //   }
+  // }, [])
+
   const handleSubmit = async (event) => {
     event.preventDefault()
     if (handleValidation()) {
@@ -89,7 +96,7 @@ function Login() {
           />
           <button type='submit'>Login In</button>
           <span>
-            Don't have an account ? <Link to='/signup'> Login</Link>
+            Don't have an account ? <Link to='/signup'> Sign up</Link>
           </span>
         </form>
       </FormContainer>
