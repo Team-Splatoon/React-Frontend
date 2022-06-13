@@ -23,7 +23,9 @@ function Signup() {
     email: '',
     password: '',
     confirmPassword: '',
-    coursesEnrolled: [],
+    identity: '',
+    coursesEnrolled: '',
+    coursesTeach: '',
   })
 
   // useEffect(() => {
@@ -35,13 +37,31 @@ function Signup() {
   const handleSubmit = async (event) => {
     event.preventDefault()
     if (handleValidation()) {
-      const { password, username, email, fullName, coursesEnrolled } = values
+      const {
+        fullName,
+        username,
+        email,
+        password,
+        identity,
+        coursesEnrolled,
+        coursesTeach,
+      } = values
+      const coursesEnrolledSplit = coursesEnrolled
+        .split(/\s*,\s*/)
+        .map((course) => course.toUpperCase())
+      console.log(coursesEnrolledSplit)
+      const coursesTeachSplit = coursesTeach
+        .split(/\s*,\s*/)
+        .map((course) => course.toUpperCase())
+      console.log(coursesTeachSplit)
       const { data } = await axios.post(signupRoute, {
         fullName,
         username,
         email,
         password,
-        coursesEnrolled,
+        identity,
+        coursesEnrolledSplit,
+        coursesTeachSplit,
       })
       if (data.status === false) {
         toast.error(data.msg, toastOptions)
@@ -60,7 +80,9 @@ function Signup() {
       username,
       email,
       fullName,
+      identity,
       coursesEnrolled,
+      coursesTeach,
     } = values
 
     if (password !== confirmPassword) {
@@ -81,9 +103,11 @@ function Signup() {
     } else if (email === '') {
       toast.error('Email is required.', toastOptions)
       return false
-    } else if (coursesEnrolled === []) {
+    } else if (identity === 'Student' && coursesEnrolled === '') {
       toast.error('Courses Enrolled are required.', toastOptions)
       return false
+    } else if (identity === 'Staff' && coursesTeach === '') {
+      toast.error('Courses Teach are required.', toastOptions)
     }
     return true
   }
@@ -124,17 +148,36 @@ function Signup() {
             onChange={(eve) => handleChange(eve)}
           />
           <input
-            type='password'
+            type='confirmPassword'
             placeholder='Confirm Password'
             name='confirmPassword'
             onChange={(eve) => handleChange(eve)}
           />
-          <input
-            type='text'
-            placeholder='Courses Enrolled'
-            name='coursesEnrolled'
+          <select
+            name='identity'
             onChange={(eve) => handleChange(eve)}
-          />
+            value={values.identity}
+          >
+            <option value=''>--Select User Type--</option>
+            <option value='Student'>Student</option>
+            <option value='Staff'>Staff</option>
+          </select>
+          {values.identity === 'Student' && (
+            <input
+              type='text'
+              placeholder='Courses Enrolled'
+              name='coursesEnrolled'
+              onChange={(eve) => handleChange(eve)}
+            />
+          )}
+          {values.identity === 'Staff' && (
+            <input
+              type='text'
+              placeholder='Courses Teach'
+              name='coursesTeach'
+              onChange={(eve) => handleChange(eve)}
+            />
+          )}
           <button type='submit'>Create User</button>
           <span>
             Already have an account ? <Link to='/login'> Login</Link>
@@ -173,6 +216,19 @@ const FormContainer = styled.div`
     padding: 3rem 5rem;
   }
   input {
+    background-color: transparent;
+    padding: 1rem;
+    border: 0.1rem solid #4e0eff;
+    border-radius: 0.4rem;
+    color: white;
+    width: 100%;
+    font-size: 1rem;
+    &:focus {
+      border: 0.1rem solid #997af0;
+      outline: none;
+    }
+  }
+  select {
     background-color: transparent;
     padding: 1rem;
     border: 0.1rem solid #4e0eff;
