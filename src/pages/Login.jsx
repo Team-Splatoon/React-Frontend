@@ -23,11 +23,11 @@ function Login() {
     password: '',
   })
 
-  // useEffect(() => {
-  //   if (localStorage.getItem('chat-app-user')) {
-  //     navigate('/')
-  //   }
-  // }, [])
+  useEffect(() => {
+    if (localStorage.getItem('chat-app-user')) {
+      navigate('/')
+    }
+  }, [])
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -145,7 +145,7 @@ const FormContainer = styled.div`
     }
   }
   button {
-    background-color: #4e0eff;
+    background-color: #997af0;
     color: white;
     padding: 1rem 2rem;
     border: none;
