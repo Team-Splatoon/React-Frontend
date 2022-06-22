@@ -62,6 +62,7 @@ function Signup() {
         coursesEnrolledSplit,
         coursesTeachSplit,
       })
+      console.log(data.user)
       if (data.status === false) {
         toast.error(data.msg, toastOptions)
       }
@@ -147,7 +148,7 @@ function Signup() {
             onChange={(eve) => handleChange(eve)}
           />
           <input
-            type='confirmPassword'
+            type='password'
             placeholder='Confirm Password'
             name='confirmPassword'
             onChange={(eve) => handleChange(eve)}
