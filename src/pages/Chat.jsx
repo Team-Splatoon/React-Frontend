@@ -47,11 +47,13 @@ function Chat() {
   return (
     <Container>
       <div className='container'>
-        <Contacts
-          contacts={contacts}
-          currentUser={currentUser}
-          changeChat={handleChatChange}
-        />
+        {isLoaded && (
+          <Contacts
+            contacts={contacts}
+            currentUser={currentUser}
+            changeChat={handleChatChange}
+          />
+        )}
         {isLoaded && currentChat === undefined ? (
           <Welcome currentUser={currentUser} />
         ) : (
