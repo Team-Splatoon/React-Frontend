@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate, Link } from 'react-router-dom'
-import { Toast } from 'bootstrap'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { signupRoute } from '../utils/APIRoutes'
@@ -28,11 +27,11 @@ function Signup() {
     coursesTeach: '',
   })
 
-  // useEffect(() => {
-  //   if (localStorage.getItem('chat-app-user')) {
-  //     navigate('/')
-  //   }
-  // }, [])
+  useEffect(() => {
+    if (localStorage.getItem('chat-app-user')) {
+      navigate('/')
+    }
+  }, [])
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -63,6 +62,7 @@ function Signup() {
         coursesEnrolledSplit,
         coursesTeachSplit,
       })
+      console.log(data.user)
       if (data.status === false) {
         toast.error(data.msg, toastOptions)
       }
@@ -148,7 +148,7 @@ function Signup() {
             onChange={(eve) => handleChange(eve)}
           />
           <input
-            type='confirmPassword'
+            type='password'
             placeholder='Confirm Password'
             name='confirmPassword'
             onChange={(eve) => handleChange(eve)}
@@ -242,7 +242,7 @@ const FormContainer = styled.div`
     }
   }
   button {
-    background-color: #4e0eff;
+    background-color: #997af0;
     color: white;
     padding: 1rem 2rem;
     border: none;
