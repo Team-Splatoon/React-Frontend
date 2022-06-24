@@ -23,16 +23,16 @@ function Login() {
     password: '',
   })
 
-  // useEffect(() => {
-  //   if (localStorage.getItem('chat-app-user')) {
-  //     navigate('/')
-  //   }
-  // }, [])
+  useEffect(() => {
+    if (localStorage.getItem('chat-app-user')) {
+      navigate('/')
+    }
+  }, [])
 
   const handleSubmit = async (event) => {
     event.preventDefault()
     if (handleValidation()) {
-      const { password, username, email } = values
+      const { username, email, password } = values
       const { data } = await axios.post(loginRoute, {
         username,
         email,
@@ -42,7 +42,7 @@ function Login() {
         toast.error(data.msg, toastOptions)
       }
       if (data.status === true) {
-        localStorage.setItem('chat-app-user', JSON.stringify(data.user))
+        localStorage.setItem('chat-app-user', JSON.stringify(data.curruser))
         navigate('/')
       }
     }
@@ -145,7 +145,7 @@ const FormContainer = styled.div`
     }
   }
   button {
-    background-color: #4e0eff;
+    background-color: #997af0;
     color: white;
     padding: 1rem 2rem;
     border: none;
