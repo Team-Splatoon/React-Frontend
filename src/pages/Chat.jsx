@@ -31,6 +31,7 @@ function Chat() {
       if (currentUser) {
         if (currentUser.isAvatarImageSet) {
           const data = await axios.get(`${allUsersRoute}/${currentUser._id}`)
+          console.log(data)
           setContacts(data.data)
         } else {
           navigate('/setavatar')
@@ -57,7 +58,7 @@ function Chat() {
         {isLoaded && currentChat === undefined ? (
           <Welcome currentUser={currentUser} />
         ) : (
-          <ChatContainer currentChat={currentChat} />
+          <ChatContainer currentChat={currentChat} currentUser={currentUser}/>
         )}
       </div>
     </Container>
