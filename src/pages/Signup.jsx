@@ -91,6 +91,9 @@ function Signup() {
     } else if (fullName === '') {
       toast.error('Full Name is required.', toastOptions)
       return false
+    } else if (identity === '--Select User Type--') {
+      toast.error('Identity is required.', toastOptions)
+      return false
     } else if (username.length < 3) {
       toast.error('Username should be greater than 3 characters.', toastOptions)
       return false
