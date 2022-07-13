@@ -22,7 +22,7 @@ function Signup() {
     email: '',
     password: '',
     confirmPassword: '',
-    identity: '',
+    identity: '--Select User Type--',
     coursesEnrolled: '',
     coursesTeach: '',
   })
@@ -48,11 +48,11 @@ function Signup() {
       const coursesEnrolledSplit = coursesEnrolled
         .split(/\s*,\s*/)
         .map((course) => course.toUpperCase())
-      console.log(coursesEnrolledSplit)
+
       const coursesTeachSplit = coursesTeach
         .split(/\s*,\s*/)
         .map((course) => course.toUpperCase())
-      console.log(coursesTeachSplit)
+
       const { data } = await axios.post(signupRoute, {
         fullName,
         username,
@@ -62,7 +62,7 @@ function Signup() {
         coursesEnrolledSplit,
         coursesTeachSplit,
       })
-      console.log(data.user)
+
       if (data.status === false) {
         toast.error(data.msg, toastOptions)
       }
@@ -111,6 +111,7 @@ function Signup() {
       return false
     } else if (identity === 'Staff' && coursesTeach === '') {
       toast.error('Courses Teach are required.', toastOptions)
+      return false
     }
     return true
   }
@@ -161,7 +162,7 @@ function Signup() {
             onChange={(eve) => handleChange(eve)}
             value={values.identity}
           >
-            <option value=''>--Select User Type--</option>
+            <option value='--Select User Type--'>--Select User Type--</option>
             <option value='Student'>Student</option>
             <option value='Staff'>Staff</option>
           </select>

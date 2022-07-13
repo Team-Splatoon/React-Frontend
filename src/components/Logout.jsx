@@ -11,7 +11,6 @@ export default function Logout() {
     localStorage.clear()
     navigate('/login')
   }
-
   return (
     <Button onClick={handleClick}>
       <BiPowerOff />
