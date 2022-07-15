@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import axios from 'axios'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Signup from './pages/Signup'
 import Login from './pages/Login'
