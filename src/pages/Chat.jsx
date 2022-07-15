@@ -57,28 +57,29 @@ function Chat() {
   }
 
   return (
-    <Container>
-      <div className='container'>
-        {/* {isLoaded && <SideDrawer />} */}
-
-        {isLoaded && (
-          <Contacts
-            contacts={contacts}
-            currentUser={currentUser}
-            changeChat={handleChatChange}
-          />
-        )}
-        {isLoaded && currentChat === undefined ? (
-          <Welcome currentUser={currentUser} />
-        ) : (
-          <ChatContainer
-            currentChat={currentChat}
-            currentUser={currentUser}
-            socket={socket}
-          />
-        )}
-      </div>
-    </Container>
+    <>
+      <Container>
+        {isLoaded && <SideDrawer />}
+        <div className='container'>
+          {isLoaded && (
+            <Contacts
+              contacts={contacts}
+              currentUser={currentUser}
+              changeChat={handleChatChange}
+            />
+          )}
+          {isLoaded && currentChat === undefined ? (
+            <Welcome currentUser={currentUser} />
+          ) : (
+            <ChatContainer
+              currentChat={currentChat}
+              currentUser={currentUser}
+              socket={socket}
+            />
+          )}
+        </div>
+      </Container>
+    </>
   )
 }
 
