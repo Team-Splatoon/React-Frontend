@@ -9,12 +9,13 @@ import ChatContainer from '../components/ChatContainer'
 import { io } from 'socket.io-client'
 import SideDrawer from '../components/miscellaneous/SideDrawer'
 import { Box } from '@chakra-ui/layout'
+import { ChatState } from '../Context/ChatProvider'
 
 function Chat() {
   const socket = useRef()
   const navigate = useNavigate()
+  const { currentUser, setCurrentUser } = ChatState()
   const [contacts, setContacts] = useState([])
-  const [currentUser, setCurrentUser] = useState(undefined)
   const [currentChat, setCurrentChat] = useState(undefined)
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -59,7 +60,7 @@ function Chat() {
   return (
     <>
       <Container>
-        {isLoaded && <SideDrawer />}
+        {isLoaded && <SideDrawer currentUser={currentUser} />}
         <div className='container'>
           {isLoaded && (
             <Contacts
