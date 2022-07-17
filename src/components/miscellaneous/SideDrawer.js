@@ -19,13 +19,14 @@ import {
 import { ChatState } from '../../Context/ChatProvider'
 import ChatLoading from '../ChatLoading'
 import UserListItem from '../UserAvatar/UserListItem'
-import { allUsersRoute } from '../../utils/APIRoutes'
+import { allUsersRoute, fetchAllChatsRoute } from '../../utils/APIRoutes'
 
-function SideDrawer({ currentUser }) {
+function SideDrawer() {
   const [search, setSearch] = useState('')
   const [searchResult, setSearchResult] = useState([])
   const [loading, setLoading] = useState(false)
   const [loadingChat, setLoadingChat] = useState(false)
+  const { currentUser, setSelectedChat, chats, setChats } = ChatState()
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const toast = useToast()
@@ -44,16 +45,13 @@ function SideDrawer({ currentUser }) {
     try {
       setLoading(true)
 
-      const config = {
-        headers: {
-          Authorization: `Bearer ${currentUser.token}`,
-        },
-      }
+      // const config = {
+      //   headers: {
+      //     // Authorization: `Bearer ${currentUser.token}`,
+      //   },
+      // }
 
-      const { data } = await axios.get(
-        `${allUsersRoute}?search=${search}`,
-        config
-      )
+      const { data } = await axios.get(`${allUsersRoute}?search=${search}`)
 
       setLoading(false)
       setSearchResult(data)
@@ -72,13 +70,15 @@ function SideDrawer({ currentUser }) {
   const accessChat = async (userId) => {
     try {
       setLoadingChat(true)
-      const config = {
-        headers: {
-          'Content-type': 'application/json',
-          Authorization: `Bearer ${currentUser.token}`,
-        },
-      }
-      const { data } = await axios.post(`/api/chat`, { userId }, config)
+      // const config = {
+      //   headers: {
+      //     'Content-type': 'application/json',
+      //     // Authorization: `Bearer ${currentUser.token}`,
+      //   },
+      // }
+      const { data } = await axios.post(fetchAllChatsRoute, {
+        userId,
+      })
 
       if (!chats.find((c) => c._id === data._id)) {
         setChats([data, ...chats])
@@ -100,7 +100,7 @@ function SideDrawer({ currentUser }) {
   return (
     <>
       <Box
-        d='flex'
+        display='flex'
         justifyContent='space-between'
         alignItems='center'
         bg='white'

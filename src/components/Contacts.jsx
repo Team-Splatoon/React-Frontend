@@ -1,13 +1,47 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import Logo from '../assets/logo.svg'
+import { ChatState } from '../Context/ChatProvider'
+import axios from 'axios'
+import ChatLoading from './ChatLoading'
+import { useToast } from '@chakra-ui/toast'
+import { fetchAllChatsRoute } from '../utils/APIRoutes'
 
-export default function Contacts({ contacts, currentUser, changeChat }) {
+export default function Contacts({ changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined)
   const [currentUserImage, setCurrentUserImage] = useState(undefined)
   const [currentSelected, setCurrentSelected] = useState(undefined)
+  const { selectedChat, setSelectedChat, currentUser, chats, setChats } =
+    ChatState()
+  const toast = useToast()
 
-  console.log('Contacts component runs')
+  const fetchChats = async () => {
+    // console.log(user._id);
+    try {
+      // const config = {
+      //   headers: {
+      //     // Authorization: `Bearer ${currentUser.token}`,
+      //   },
+      // }
+      const user = await JSON.parse(localStorage.getItem('chat-app-user'))
+      const { data } = await axios.get(fetchAllChatsRoute)
+      console.log(data)
+      setChats(data)
+    } catch (error) {
+      toast({
+        title: 'Error Occured!',
+        description: 'Failed to Load the chats',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'bottom-left',
+      })
+    }
+  }
+
+  useEffect(() => {
+    fetchChats()
+  }, [])
 
   useEffect(() => {
     if (currentUser) {
@@ -19,36 +53,52 @@ export default function Contacts({ contacts, currentUser, changeChat }) {
     setCurrentSelected(index)
     changeChat(contact)
   }
+
+  const getSender = (currUser, users) => {
+    return users[0]._id === currUser._id ? users[1].username : users[0].username
+  }
+
   return (
     <>
       {currentUserName && currentUserImage && (
         <Container>
           <div className='brand'>
-            <img src={Logo} alt='logo' />
             <h3>NUSCourseChat</h3>
           </div>
           <div className='contacts'>
-            {contacts.map((contact, index) => {
-              return (
-                <div
-                  key={index}
-                  className={`contact ${
-                    index === currentSelected ? 'selected' : ''
-                  }`}
-                  onClick={() => changeCurrentChat(index, contact)}
-                >
-                  <div className='avatar'>
-                    <img
-                      src={`data:image/svg+xml;base64,${contact.avatarImage}`}
-                      alt='avatar'
-                    />
+            {chats ? (
+              chats.map((contact, index) => {
+                return (
+                  <div
+                    key={index}
+                    className={`contact ${
+                      index === currentSelected ? 'selected' : ''
+                    }`}
+                    onClick={() => changeCurrentChat(index, contact)}
+                  >
+                    {!contact.isGroupChat ? (
+                      <>
+                        <div className='avatar'>
+                          <img
+                            src={`data:image/svg+xml;base64,${contact.avatarImage}`}
+                            alt='avatar'
+                          />
+                        </div>
+                        <div className='username'>
+                          <h3>{getSender(currentUser, contact.users)}</h3>
+                        </div>
+                      </>
+                    ) : (
+                      <div className='username'>
+                        <h3>{contact.chatName}</h3>
+                      </div>
+                    )}
                   </div>
-                  <div className='username'>
-                    <h3>{contact.username}</h3>
-                  </div>
-                </div>
-              )
-            })}
+                )
+              })
+            ) : (
+              <ChatLoading />
+            )}
           </div>
           <div className='current-user'>
             <div className='avatar'>

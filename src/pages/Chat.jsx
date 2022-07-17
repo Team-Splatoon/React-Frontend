@@ -14,9 +14,8 @@ import { ChatState } from '../Context/ChatProvider'
 function Chat() {
   const socket = useRef()
   const navigate = useNavigate()
-  const { currentUser, setCurrentUser } = ChatState()
-  const [contacts, setContacts] = useState([])
-  const [currentChat, setCurrentChat] = useState(undefined)
+  const { currentUser, setCurrentUser, selectedChat, setSelectedChat } =
+    ChatState()
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
@@ -41,11 +40,7 @@ function Chat() {
   useEffect(() => {
     async function imageCheck() {
       if (currentUser) {
-        if (currentUser.isAvatarImageSet) {
-          const data = await axios.get(`${allUsersRoute}/${currentUser._id}`)
-          // console.log(data)
-          setContacts(data.data)
-        } else {
+        if (!currentUser.isAvatarImageSet) {
           navigate('/setavatar')
         }
       }
@@ -54,26 +49,20 @@ function Chat() {
   }, [currentUser])
 
   const handleChatChange = (chat) => {
-    setCurrentChat(chat)
+    setSelectedChat(chat)
   }
 
   return (
     <>
       <Container>
-        {isLoaded && <SideDrawer currentUser={currentUser} />}
+        {isLoaded && <SideDrawer />}
         <div className='container'>
-          {isLoaded && (
-            <Contacts
-              contacts={contacts}
-              currentUser={currentUser}
-              changeChat={handleChatChange}
-            />
-          )}
-          {isLoaded && currentChat === undefined ? (
+          {isLoaded && <Contacts changeChat={handleChatChange} />}
+          {isLoaded && selectedChat === undefined ? (
             <Welcome currentUser={currentUser} />
           ) : (
             <ChatContainer
-              currentChat={currentChat}
+              currentChat={selectedChat}
               currentUser={currentUser}
               socket={socket}
             />
