@@ -6,8 +6,9 @@ import axios from 'axios'
 import ChatLoading from './ChatLoading'
 import { useToast } from '@chakra-ui/toast'
 import { fetchAllChatsRoute } from '../utils/APIRoutes'
+import GroupChatModal from './miscellaneous/GroupChatModal'
 
-export default function Contacts({ changeChat }) {
+export default function Contacts({ fetchAgain, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined)
   const [currentUserImage, setCurrentUserImage] = useState(undefined)
   const [currentSelected, setCurrentSelected] = useState(undefined)
@@ -24,7 +25,9 @@ export default function Contacts({ changeChat }) {
       //   },
       // }
       const user = await JSON.parse(localStorage.getItem('chat-app-user'))
-      const { data } = await axios.get(fetchAllChatsRoute)
+      const { data } = await axios.get(fetchAllChatsRoute, {
+        params: { user: { _id: currentUser._id } },
+      })
       console.log(data)
       setChats(data)
     } catch (error) {
@@ -41,7 +44,7 @@ export default function Contacts({ changeChat }) {
 
   useEffect(() => {
     fetchChats()
-  }, [])
+  }, [fetchAgain])
 
   useEffect(() => {
     if (currentUser) {
@@ -55,7 +58,7 @@ export default function Contacts({ changeChat }) {
   }
 
   const getSender = (currUser, users) => {
-    return users[0]._id === currUser._id ? users[1].username : users[0].username
+    return users[0]._id === currUser._id ? users[1] : users[0]
   }
 
   return (
@@ -65,6 +68,9 @@ export default function Contacts({ changeChat }) {
           <div className='brand'>
             <h3>NUSCourseChat</h3>
           </div>
+          <GroupChatModal>
+            <button className='create-group'>New Group Chat</button>
+          </GroupChatModal>
           <div className='contacts'>
             {chats ? (
               chats.map((contact, index) => {
@@ -85,7 +91,9 @@ export default function Contacts({ changeChat }) {
                           />
                         </div>
                         <div className='username'>
-                          <h3>{getSender(currentUser, contact.users)}</h3>
+                          <h3>
+                            {getSender(currentUser, contact.users).username}
+                          </h3>
                         </div>
                       </>
                     ) : (
@@ -197,6 +205,20 @@ const Container = styled.div`
           font-size: 1rem;
         }
       }
+    }
+  }
+  .create-group {
+    background-color: #997af0;
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 0.4rem;
+    font-size: 1rem;
+    text-transform: uppercase;
+    &:hover {
+      background-color: #4e0eff;
     }
   }
 `

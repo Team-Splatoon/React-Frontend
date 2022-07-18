@@ -17,6 +17,7 @@ function Chat() {
   const { currentUser, setCurrentUser, selectedChat, setSelectedChat } =
     ChatState()
   const [isLoaded, setIsLoaded] = useState(false)
+  const [fetchAgain, setFetchAgain] = useState(false)
 
   useEffect(() => {
     async function userCheck() {
@@ -57,13 +58,15 @@ function Chat() {
       <Container>
         {isLoaded && <SideDrawer />}
         <div className='container'>
-          {isLoaded && <Contacts changeChat={handleChatChange} />}
+          {isLoaded && (
+            <Contacts fetchAgain={fetchAgain} changeChat={handleChatChange} />
+          )}
           {isLoaded && selectedChat === undefined ? (
             <Welcome currentUser={currentUser} />
           ) : (
             <ChatContainer
-              currentChat={selectedChat}
-              currentUser={currentUser}
+              fetchAgain={fetchAgain}
+              setFetchAgain={setFetchAgain}
               socket={socket}
             />
           )}

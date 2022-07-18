@@ -25,7 +25,7 @@ const UserListItem = ({ handleFunction, user }) => {
         size='sm'
         cursor='pointer'
         name={user.username}
-        src={user.avatarImage}
+        src={`data:image/svg+xml;base64,${contact.avatarImage}`}
       />
       <Box>
         <Text>{user.username}</Text>
