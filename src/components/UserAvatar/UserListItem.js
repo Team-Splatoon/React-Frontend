@@ -1,5 +1,6 @@
 import { Avatar } from '@chakra-ui/avatar'
 import { Box, Text } from '@chakra-ui/layout'
+import { ChatState } from '../../Context/ChatProvider'
 
 const UserListItem = ({ handleFunction, user }) => {
   return (
@@ -25,7 +26,7 @@ const UserListItem = ({ handleFunction, user }) => {
         size='sm'
         cursor='pointer'
         name={user.username}
-        src={`data:image/svg+xml;base64,${contact.avatarImage}`}
+        src={`data:image/svg+xml;base64,${user.avatarImage}`}
       />
       <Box>
         <Text>{user.username}</Text>

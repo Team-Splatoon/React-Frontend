@@ -16,8 +16,8 @@ import {
 import axios from 'axios'
 import { useState } from 'react'
 import { ChatState } from '../../Context/ChatProvider'
-import UserBadgeItem from '../userAvatar/UserBadgeItem'
-import UserListItem from '../userAvatar/UserListItem'
+import UserBadgeItem from '../UserAvatar/UserBadgeItem'
+import UserListItem from '../UserAvatar/UserListItem'
 import { allUsersRoute, createGroupChatRoute } from '../../utils/APIRoutes'
 
 const GroupChatModal = ({ children }) => {
@@ -160,6 +160,7 @@ const GroupChatModal = ({ children }) => {
                 <UserListItem
                   key={user._id}
                   handleFunction={() => handleGroup(user)}
+                  user={user}
                 />
               ))
             )}
