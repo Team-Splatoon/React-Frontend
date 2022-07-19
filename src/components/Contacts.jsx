@@ -17,7 +17,6 @@ export default function Contacts({ fetchAgain, changeChat }) {
   const toast = useToast()
 
   const fetchChats = async () => {
-    // console.log(user._id);
     try {
       // const config = {
       //   headers: {
@@ -25,6 +24,7 @@ export default function Contacts({ fetchAgain, changeChat }) {
       //   },
       // }
       const user = await JSON.parse(localStorage.getItem('chat-app-user'))
+      console.log(user)
       const { data } = await axios.get(fetchAllChatsRoute, {
         params: { user: { _id: currentUser._id } },
       })
@@ -74,6 +74,7 @@ export default function Contacts({ fetchAgain, changeChat }) {
           <div className='contacts'>
             {chats ? (
               chats.map((contact, index) => {
+                console.log(chats)
                 return (
                   <div
                     key={index}

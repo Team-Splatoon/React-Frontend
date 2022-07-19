@@ -78,11 +78,16 @@ function SideDrawer() {
       //     // Authorization: `Bearer ${currentUser.token}`,
       //   },
       // }
-      const { data } = await axios.post(fetchAllChatsRoute, {
-        userId,
-        data: { user: { _id: currentUser._id } },
-      })
+      
+      // const { data } = await axios.post(fetchAllChatsRoute, {
+      //   userId,
+      //   data: { user: { _id: currentUser._id } },
+      // })
 
+      const { data } = await axios.post(fetchAllChatsRoute, { userId }, 
+      {
+        params: { user: { _id: currentUser._id } },
+      })
       if (!chats.find((c) => c._id === data._id)) {
         setChats([data, ...chats])
       }
