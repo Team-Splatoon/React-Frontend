@@ -40,11 +40,11 @@ function Chat() {
 
   useEffect(() => {
     async function imageCheck() {
-      if (currentUser) {
-        if (!currentUser.isAvatarImageSet) {
-          navigate('/setavatar')
-        }
+      if (!JSON.parse(localStorage.getItem('chat-app-user')).isAvatarImageSet) {
+        navigate('/setavatar')
       }
+      console.log(currentUser)
+      console.log(JSON.parse(localStorage.getItem('chat-app-user')))
     }
     imageCheck()
   }, [currentUser])

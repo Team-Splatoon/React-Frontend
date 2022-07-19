@@ -5,7 +5,7 @@ import { ChatState } from '../Context/ChatProvider'
 import axios from 'axios'
 import ChatLoading from './ChatLoading'
 import { useToast } from '@chakra-ui/toast'
-import { fetchAllChatsRoute } from '../utils/APIRoutes'
+import { allUsersRoute, fetchAllChatsRoute } from '../utils/APIRoutes'
 import GroupChatModal from './miscellaneous/GroupChatModal'
 
 export default function Contacts({ fetchAgain, changeChat }) {
@@ -58,8 +58,14 @@ export default function Contacts({ fetchAgain, changeChat }) {
   }
 
   const getSender = (currUser, users) => {
-    return users[0]._id === currUser._id ? users[1] : users[0]
+    //console.log(users[0]._id === currUser._id ? users[1] : users[0])
+    return users[0]._id === currUser._id ? users[1] : users[0]  
   }
+
+  // const getAvatarImage = (userId) => {
+  //   await axios.get(allUsersRoute, {
+  //   params: { user: { _id: userId } },
+  // })
 
   return (
     <>
@@ -74,7 +80,8 @@ export default function Contacts({ fetchAgain, changeChat }) {
           <div className='contacts'>
             {chats ? (
               chats.map((contact, index) => {
-                console.log(chats)
+                //console.log(chats)
+                console.log(contact)
                 return (
                   <div
                     key={index}
@@ -86,8 +93,12 @@ export default function Contacts({ fetchAgain, changeChat }) {
                     {!contact.isGroupChat ? (
                       <>
                         <div className='avatar'>
+
                           <img
-                            src={`data:image/svg+xml;base64,${contact.avatarImage}`}
+                            src={`data:image/svg+xml;base64,${
+                              getSender(currentUser, contact.users).avatarImage
+                            }`}
+                            // src={`data:image/svg+xml;base64,${contact.avatarImage}`}
                             alt='avatar'
                           />
                         </div>
