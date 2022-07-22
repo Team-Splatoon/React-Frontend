@@ -14,37 +14,43 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
   const { currentUser, setCurrentUser, selectedChat, setSelectedChat } =
     ChatState()
 
-  // useEffect(() => {
-  //   async function getCurrent() {
-  //     if (currentChat && currentUser) {
-  //       const { data } = await axios.post(getAllMessagesRoute, {
-  //         from: currentUser._id,
-  //         to: currentChat._id,
-  //       })
-  //       setMessages(data)
-  //       // console.log(data)
-  //     }
-  //     // console.log(currentChat, currentUser)
-  //   }
-  //   getCurrent()
-  // }, [currentChat, arrivalMessage, currentUser])
+    // const user = JSON.parse(localStorage.getItem('chat-app-user'))
+    // setCurrentUser(user)
 
-  // const handleSendMsg = async (msg) => {
-  //   await axios.post(sendMessageRoute, {
-  //     from: currentUser._id,
-  //     to: currentChat._id,
-  //     message: msg,
-  //   })
-  //   socket.current.emit('send-msg', {
-  //     to: currentChat._id,
-  //     from: currentUser._id,
-  //     message: msg,
-  //   })
+  useEffect(() => {
+    async function getCurrent() {
+      if (selectedChat && currentUser) {
+        console.log(selectedChat)
+        console.log(currentUser)
+        const { data } = await axios.post (getAllMessagesRoute, {
+          from: currentUser._id,
+          to: getSender(currentUser, selectedChat.users)._id,
+        })
+        setMessages(data)
+        console.log(data)
+      }
+      console.log(selectedChat, currentUser)
+    }
+    getCurrent()
+  }, [selectedChat, arrivalMessage, currentUser])
 
-  //   const msgs = [...messages]
-  //   msgs.push({ fromSelf: true, message: msg })
-  //   setMessages(msgs)
-  // }
+  const handleSendMsg = async (msg) => {
+    console.log(getSender(currentUser, selectedChat.users)._id)
+    await axios.post(sendMessageRoute, {
+      from: currentUser._id,
+      to: getSender(currentUser, selectedChat.users)._id,
+      message: msg,
+    })
+    socket.current.emit('send-msg', {
+      to: getSender(currentUser, selectedChat.users)._id,
+      from: currentUser._id,
+      message: msg,
+    })
+
+    const msgs = [...messages]
+    msgs.push({ fromSelf: true, message: msg })
+    setMessages(msgs)
+  }
 
   useEffect(() => {
     if (socket.current) {
@@ -105,7 +111,7 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
                 )
               })}
             </div>
-            {/* <ChatInput handleSendMsg={handleSendMsg} /> */}
+            <ChatInput handleSendMsg={handleSendMsg} />
           </Container>
         ) : (
           <Container>

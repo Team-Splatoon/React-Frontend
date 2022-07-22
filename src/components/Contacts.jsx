@@ -24,11 +24,11 @@ export default function Contacts({ fetchAgain, changeChat }) {
       //   },
       // }
       const user = await JSON.parse(localStorage.getItem('chat-app-user'))
-      console.log(user)
+      //console.log(user)
       const { data } = await axios.get(fetchAllChatsRoute, {
         params: { user: { _id: currentUser._id } },
       })
-      console.log(data)
+      //console.log(data)
       setChats(data)
     } catch (error) {
       toast({
@@ -81,7 +81,7 @@ export default function Contacts({ fetchAgain, changeChat }) {
             {chats ? (
               chats.map((contact, index) => {
                 //console.log(chats)
-                console.log(contact)
+                //console.log(contact)
                 return (
                   <div
                     key={index}
