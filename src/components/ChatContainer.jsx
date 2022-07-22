@@ -6,6 +6,7 @@ import axios from 'axios'
 import { getAllMessagesRoute, sendMessageRoute } from '../utils/APIRoutes'
 import { v4 as uuidv4 } from 'uuid'
 import { ChatState } from '../Context/ChatProvider'
+import UpdateGroupChatModal from './miscellaneous/UpdateGroupChatModal'
 
 export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
   const [messages, setMessages] = useState([])
@@ -14,17 +15,17 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
   const { currentUser, setCurrentUser, selectedChat, setSelectedChat } =
     ChatState()
 
-    // const user = JSON.parse(localStorage.getItem('chat-app-user'))
-    // setCurrentUser(user)
+  // const user = JSON.parse(localStorage.getItem('chat-app-user'))
+  // setCurrentUser(user)
 
   useEffect(() => {
     async function getCurrent() {
       if (selectedChat && currentUser) {
         console.log(selectedChat)
         console.log(currentUser)
-        const { data } = await axios.post (getAllMessagesRoute, {
+        const { data } = await axios.post(getAllMessagesRoute, {
           from: currentUser._id,
-          to: getSender(currentUser, selectedChat.users)._id,
+          to: selectedChat._id,
         })
         setMessages(data)
         console.log(data)
@@ -38,11 +39,11 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
     console.log(getSender(currentUser, selectedChat.users)._id)
     await axios.post(sendMessageRoute, {
       from: currentUser._id,
-      to: getSender(currentUser, selectedChat.users)._id,
+      to: selectedChat._id,
       message: msg,
     })
     socket.current.emit('send-msg', {
-      to: getSender(currentUser, selectedChat.users)._id,
+      to: selectedChat._id,
       from: currentUser._id,
       message: msg,
     })
@@ -115,8 +116,38 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
           </Container>
         ) : (
           <Container>
-            {selectedChat.chatName.toUpperCase()}
-            {/* {<UpdateGroupChatModal fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />} */}
+            {/* {
+              <UpdateGroupChatModal
+                fetchAgain={fetchAgain}
+                setFetchAgain={setFetchAgain}
+              />
+            } */}
+            <div className='chat-header'>
+              <div className='user-details'>
+                <div className='username'>
+                  <h3>{selectedChat.chatName.toUpperCase()}</h3>
+                </div>
+              </div>
+              <Logout />
+            </div>
+            <div className='chat-messages'>
+              {messages.map((message) => {
+                return (
+                  <div ref={scrollRef} key={uuidv4()}>
+                    <div
+                      className={`message ${
+                        message.fromSelf ? 'sended' : 'received'
+                      }`}
+                    >
+                      <div className='content'>
+                        <p>{message.message}</p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <ChatInput handleSendMsg={handleSendMsg} />
           </Container>
         ))}
     </>

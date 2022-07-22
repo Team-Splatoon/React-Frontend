@@ -19,12 +19,13 @@ import {
 import axios from 'axios'
 import { useState } from 'react'
 import { ChatState } from '../../Context/ChatProvider'
-import UserBadgeItem from '../userAvatar/UserBadgeItem'
-import UserListItem from '../userAvatar/UserListItem'
+import UserBadgeItem from '../UserAvatar/UserBadgeItem'
+import UserListItem from '../UserAvatar/UserListItem'
 import {
   renameGroupChatRoute,
   addpplGroupChatRoute,
   removepplGroupChatRoute,
+  allUsersRoute,
 } from '../../utils/APIRoutes'
 
 const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
@@ -241,7 +242,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
             )}
           </ModalBody>
           <ModalFooter>
-            <Button onClick={() => handleRemove(user)} colorScheme='red'>
+            <Button onClick={() => handleRemove(currentUser)} colorScheme='red'>
               Leave Group
             </Button>
           </ModalFooter>
