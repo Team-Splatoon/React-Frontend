@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import axios from 'axios'
@@ -14,45 +13,44 @@ import { ChatState } from '../Context/ChatProvider'
 import GroupChatModal from '../components/miscellaneous/GroupChatModal'
 import ChatLoading from '../components/ChatLoading'
 
-
 function Chat() {
-  const socket = useRef(null);
+  const socket = useRef(null)
   // const ENDPOINT = "http://localhost:4000"
   // const socket = io(ENDPOINT)
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const { currentUser, setCurrentUser, selectedChat, setSelectedChat } =
-    ChatState();
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [fetchAgain, setFetchAgain] = useState(false);
-  const [socketConnected, setSocketConnected] = useState(false);
+    ChatState()
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [fetchAgain, setFetchAgain] = useState(false)
+  const [socketConnected, setSocketConnected] = useState(false)
 
   useEffect(() => {
     async function userCheck() {
-      if (!localStorage.getItem("chat-app-user")) {
-        navigate("/login");
+      if (!localStorage.getItem('chat-app-user')) {
+        navigate('/login')
       } else {
-        setCurrentUser(await JSON.parse(localStorage.getItem("chat-app-user")));
-        setIsLoaded(true);
+        setCurrentUser(await JSON.parse(localStorage.getItem('chat-app-user')))
+        setIsLoaded(true)
       }
     }
-    userCheck();
-  }, []);
+    userCheck()
+  }, [])
 
   useEffect(() => {
     if (currentUser) {
       if (socket.current == null) {
-        socket.current = io(host);
+        socket.current = io(host)
       }
       //console.log(socket.current)
-      const { current: socketRef } = socket;
+      const { current: socketRef } = socket
       try {
-        socketRef.open();
-        socketRef.emit("setup", currentUser);
+        socketRef.open()
+        socketRef.emit('setup', currentUser)
       } catch (e) {
-        console.log("setup error: " + e);
+        console.log('setup error: ' + e)
       }
     }
-  }, [currentUser]);
+  }, [currentUser])
 
   // useEffect(() => {
   //   if (currentUser) {
@@ -65,18 +63,18 @@ function Chat() {
 
   useEffect(() => {
     async function imageCheck() {
-      if (!JSON.parse(localStorage.getItem("chat-app-user")).isAvatarImageSet) {
-        navigate("/setavatar");
+      if (!JSON.parse(localStorage.getItem('chat-app-user')).isAvatarImageSet) {
+        navigate('/setavatar')
       }
       //console.log(currentUser)
       //console.log(JSON.parse(localStorage.getItem('chat-app-user')))
     }
-    imageCheck();
-  }, [currentUser]);
+    imageCheck()
+  }, [currentUser])
 
   const handleChatChange = (chat) => {
-    setSelectedChat(chat);
-  };
+    setSelectedChat(chat)
+  }
 
   return (
     <>
@@ -107,7 +105,7 @@ function Chat() {
         </div>
       </Container>
     </>
-  );
+  )
 }
 
 const Container = styled.div`
@@ -145,5 +143,4 @@ const Container = styled.div`
   }
 `
 
-
-export default Chat;
+export default Chat
