@@ -12,9 +12,9 @@ import { Box } from '@chakra-ui/layout'
 import { ChatState } from '../Context/ChatProvider'
 
 function Chat() {
-  //const socket = useRef()
-  const ENDPOINT = "http://localhost:4000"
-  const socket = io(ENDPOINT)
+  const socket = useRef(null)
+  // const ENDPOINT = "http://localhost:4000"
+  // const socket = io(ENDPOINT)
   const navigate = useNavigate()
   const { currentUser, setCurrentUser, selectedChat, setSelectedChat } =
     ChatState()
@@ -34,12 +34,22 @@ function Chat() {
     userCheck()
   }, [])
 
-  // useEffect(() => {
-  //   if (currentUser) {
-  //     socket.current = io(host)
-  //     socket.current.emit('setup', currentUser)
-  //   }
-  // }, [currentUser])
+  useEffect(() => {
+    if (currentUser) {
+      if(socket.current == null){
+      socket.current = io(host)
+      }
+      console.log(socket.current)
+      const {current:socketRef} = socket;
+      try{
+      socketRef.open();
+      socketRef.emit('setup', currentUser)
+      } catch (e){
+        console.log("setup error: " + e)
+      }
+
+    }
+  }, [currentUser])
 
   // useEffect(() => {
   //   if (currentUser) {
@@ -79,7 +89,7 @@ function Chat() {
             <ChatContainer
               fetchAgain={fetchAgain}
               setFetchAgain={setFetchAgain}
-              //socket={socket}
+              socket={socket}
             />
           )}
         </div>

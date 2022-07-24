@@ -1,140 +1,154 @@
-import React, { useState, useEffect, useRef } from 'react'
-import styled from 'styled-components'
-import { io } from 'socket.io-client'
-import Logout from './Logout'
-import ChatInput from './ChatInput'
-import axios from 'axios'
-import { getAllMessagesRoute, sendMessageRoute } from '../utils/APIRoutes'
-import { v4 as uuidv4 } from 'uuid'
-import { ChatState } from '../Context/ChatProvider'
-import UpdateGroupChatModal from './miscellaneous/UpdateGroupChatModal'
+import React, { useState, useEffect, useRef } from "react";
+import styled from "styled-components";
+import { io } from "socket.io-client";
+import Logout from "./Logout";
+import ChatInput from "./ChatInput";
+import axios from "axios";
+import { getAllMessagesRoute, sendMessageRoute } from "../utils/APIRoutes";
+import { v4 as uuidv4 } from "uuid";
+import { ChatState } from "../Context/ChatProvider";
+import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
+import { Grid, GridItem, Text } from "@chakra-ui/react";
 
-export default function ChatContainer({ fetchAgain, setFetchAgain }) {
-  const [messages, setMessages] = useState([])
-  const [arrivalMessage, setArrivalMessage] = useState(null)
-  const scrollRef = useRef()
+export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
+  const [messages, setMessages] = useState([]);
+  const [arrivalMessage, setArrivalMessage] = useState(null);
+  const scrollRef = useRef();
   const { currentUser, setCurrentUser, selectedChat, setSelectedChat } =
-    ChatState()
+    ChatState();
 
-  const ENDPOINT = "http://localhost:4000"
-  const socket = io(ENDPOINT)
+  // const ENDPOINT = "http://localhost:4000"
+  // const socket = io(ENDPOINT)
 
   // const user = JSON.parse(localStorage.getItem('chat-app-user'))
   // setCurrentUser(user)
 
   useEffect(() => {
     async function getCurrent() {
-      console.log(socket)
+      console.log(socket);
       if (selectedChat && currentUser) {
-        console.log(selectedChat)
-        console.log(currentUser)
+        console.log(selectedChat);
+        console.log(currentUser);
         const { data } = await axios.post(getAllMessagesRoute, {
           from: currentUser._id,
           to: selectedChat._id,
-        })
-        setMessages(data)
-        socket.emit("join chat", selectedChat._id)
+        });
+        setMessages(data);
+        console.log(socket.current);
+        socket.current.emit("join_chat", selectedChat._id);
         //console.log(data)
       }
       //console.log(selectedChat, currentUser)
     }
-    getCurrent()
-  }, [selectedChat, arrivalMessage, currentUser])
+    getCurrent();
+  }, [selectedChat, arrivalMessage, currentUser]);
 
   useEffect(() => {
     if (currentUser) {
-      socket.emit("setup", currentUser);
+      socket.current.emit("setup", currentUser);
       // socket.on("connected", () => setSocketConnected(true));
-      console.log(socket)
+      console.log(socket);
     }
-  }, [currentUser]);
+  }, []);
 
   const handleSendMsg = async (msg) => {
     //console.log(getSender(currentUser, selectedChat.users)._id)
-    console.log(socket)
+    // console.log(socket);
+    const sendTime =
+      new Date(Date.now()).getHours() + ":" + new Date(Date.now()).getMinutes();
+    //console.log(currentUser.username);
     await axios.post(sendMessageRoute, {
       from: currentUser._id,
+      name: currentUser.username,
       to: selectedChat._id,
       message: msg,
-      time:
-          new Date(Date.now()).getHours() +
-          ":" +
-          new Date(Date.now()).getMinutes(),
+      time: sendTime,
       chat: selectedChat,
-    })
-    socket.emit("send-msg", {
+    });
+    socket.current.emit("send_msg", {
       to: selectedChat._id,
       from: currentUser._id,
+      name: currentUser.username,
       message: msg,
-      time:
-          new Date(Date.now()).getHours() +
-          ":" +
-          new Date(Date.now()).getMinutes(),
+      time: sendTime,
       chat: selectedChat,
-    })
+    });
 
-    const msgs = [...messages]
-    msgs.push({ fromSelf: true, message: msg, time: msg.time})
-    setMessages(msgs)
-  }
+    // const msgs = [...messages];
+    // msgs.push({ fromSelf: true, message: msg, time: msg.time });
+    setMessages((prev) => [
+      ...prev,
+      {
+        fromSelf: true,
+        message: msg,
+        time: sendTime,
+        name: currentUser.username,
+      },
+    ]);
+  };
 
   useEffect(() => {
-    if (socket) {
-      socket.on("msg-recieve", (msg) => {
-        setArrivalMessage({ fromSelf: false, message: msg, time: msg.time })
-      })
+    if (socket.current) {
+      socket.current.on("msg_recieve", (msg) => {
+        console.log("msg: " + msg);
+        setArrivalMessage({
+          fromSelf: false,
+          message: msg.message,
+          time: msg.time,
+          name: msg.name,
+        });
+      });
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    // console.log(arrivalMessage)
-    arrivalMessage && setMessages((prev) => [...prev, arrivalMessage])
-  }, [arrivalMessage])
+    arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
+  }, [arrivalMessage]);
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behaviour: 'smooth' })
-  }, [messages])
+    scrollRef.current?.scrollIntoView({ behaviour: "smooth" });
+  }, [messages]);
 
   const getSender = (currUser, users) => {
-    return users[0]._id === currUser._id ? users[1] : users[0]
-  }
+    return users[0]._id === currUser._id ? users[1] : users[0];
+  };
 
   return (
     <>
       {selectedChat &&
         (!selectedChat.isGroupChat ? (
           <Container>
-            <div className='chat-header'>
-              <div className='user-details'>
-                <div className='avatar'>
+            <div className="chat-header">
+              <div className="user-details">
+                <div className="avatar">
                   <img
                     src={`data:image/svg+xml;base64,${
                       getSender(currentUser, selectedChat.users).avatarImage
                     }`}
-                    alt='avatar'
+                    alt="avatar"
                   />
                 </div>
-                <div className='username'>
+                <div className="username">
                   <h3>{getSender(currentUser, selectedChat.users).username}</h3>
                 </div>
               </div>
               <Logout />
             </div>
-            <div className='chat-messages'>
+            <div className="chat-messages">
               {messages.map((message) => {
                 return (
                   <div ref={scrollRef} key={uuidv4()}>
                     <div
                       className={`message ${
-                        message.fromSelf ? 'sended' : 'received'
+                        message.fromSelf ? "sended" : "received"
                       }`}
                     >
-                      <div className='content'>
+                      <div className="content">
                         <p>{message.message}</p>
                       </div>
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
             <ChatInput handleSendMsg={handleSendMsg} />
@@ -147,40 +161,48 @@ export default function ChatContainer({ fetchAgain, setFetchAgain }) {
                 setFetchAgain={setFetchAgain}
               />
             } */}
-            <div className='chat-header'>
-              <div className='user-details'>
-                <div className='username'>
+            <div className="chat-header">
+              <div className="user-details">
+                <div className="username">
                   <h3>{selectedChat.chatName.toUpperCase()}</h3>
                 </div>
               </div>
               <Logout />
             </div>
-            <div className='chat-messages'>
+            <div className="chat-messages">
               {messages.map((message) => {
                 return (
                   <div ref={scrollRef} key={uuidv4()}>
                     <div
                       className={`message ${
-                        message.fromSelf ? 'sended' : 'received'
+                        message.fromSelf ? "sended" : "received"
                       }`}
                     >
-                      <div className='content'>
-                        <p>{message.message}</p>
-                      </div>
-                      <div className="message-meta">
-                        <p id="time">{message.time}</p>
-                        <p id="author">{message.from}</p>
-                      </div>
+                      <Grid templateRows="repeat(1,1fr)">
+                        <GridItem
+                          className="content"
+                          rowSpan={"auto"}
+                          height="auto"
+                        >
+                          <Text>{message.message}</Text>
+                        </GridItem>
+                        <GridItem className="message-meta" rowSpan={"auto"}>
+                          <p id="time">
+                            {message.name}
+                            {message.time}
+                          </p>
+                        </GridItem>
+                      </Grid>
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
             <ChatInput handleSendMsg={handleSendMsg} />
           </Container>
         ))}
     </>
-  )
+  );
 }
 
 const Container = styled.div`
@@ -231,8 +253,8 @@ const Container = styled.div`
       display: flex;
       align-items: center;
       .content {
-        max-width: 40%;
-        overflow-wrap: break-word;
+        /* max-width: 50%; */
+        //overflow-wrap: break-word;
         padding: 0.5rem;
         font-size: 1.1rem;
         border-radius: 1rem;
@@ -245,8 +267,9 @@ const Container = styled.div`
         background-color: #4d04ff21;
       }
       .message-meta {
-         justify-content: flex-end;
-         margin-left: 5px;
+        color: white;
+        justify-content: flex-end;
+        margin-left: 5px;
       }
     }
     .received {
@@ -255,9 +278,10 @@ const Container = styled.div`
         background-color: #9900ff20;
       }
       .message-meta {
+        color: white;
         justify-content: flex-start;
         margin-right: 5px;
       }
     }
   }
-`
+`;
