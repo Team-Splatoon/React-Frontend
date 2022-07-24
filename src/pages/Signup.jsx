@@ -64,11 +64,11 @@ function Signup() {
         coursesTeach,
       } = values
       const coursesEnrolledSplit = coursesEnrolled
-        .split(/\s*,\s*/)
+        .split(/\s*,+\s*/)
         .map((course) => course.toUpperCase())
 
       const coursesTeachSplit = coursesTeach
-        .split(/\s*,\s*/)
+        .split(/\s*,+\s*/)
         .map((course) => course.toUpperCase())
 
       const { data } = await axios.post(signupRoute, {
@@ -84,9 +84,18 @@ function Signup() {
       if (data.status === false) {
         toast.error(data.msg, toastOptions)
       }
+      if (data.status === true) {
+        localStorage.setItem('chat-app-user', JSON.stringify(data.user))
+        navigate('/')
+      }
 
       const currentUser = data.user
       const allCoursesSplit = [...coursesEnrolledSplit, ...coursesTeachSplit]
+      console.log(allCoursesSplit)
+      console.log(JSON.stringify(currentUser._id))
+      console.log(currentUser)
+      console.log(currGroupChatList)
+
       try {
         const { data: newGroupChats } = await axios.post(
           autoCreateGroupChatRoute,
@@ -120,11 +129,6 @@ function Signup() {
           isClosable: true,
           position: 'bottom',
         })
-      }
-
-      if (data.status === true) {
-        localStorage.setItem('chat-app-user', JSON.stringify(data.user))
-        navigate('/')
       }
     }
   }
