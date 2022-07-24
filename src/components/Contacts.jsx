@@ -1,13 +1,50 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import Logo from '../assets/logo.svg'
+import { ChatState } from '../Context/ChatProvider'
+import axios from 'axios'
+import ChatLoading from './ChatLoading'
+import { useToast } from '@chakra-ui/toast'
+import { allUsersRoute, fetchAllChatsRoute } from '../utils/APIRoutes'
+import GroupChatModal from './miscellaneous/GroupChatModal'
 
-export default function Contacts({ contacts, currentUser, changeChat }) {
+export default function Contacts({ fetchAgain, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined)
   const [currentUserImage, setCurrentUserImage] = useState(undefined)
   const [currentSelected, setCurrentSelected] = useState(undefined)
+  const { selectedChat, setSelectedChat, currentUser, chats, setChats } =
+    ChatState()
+  const toast = useToast()
 
-  console.log('Contacts component runs')
+  const fetchChats = async () => {
+    try {
+      // const config = {
+      //   headers: {
+      //     // Authorization: `Bearer ${currentUser.token}`,
+      //   },
+      // }
+      const user = await JSON.parse(localStorage.getItem('chat-app-user'))
+      //console.log(user)
+      const { data } = await axios.get(fetchAllChatsRoute, {
+        params: { user: { _id: currentUser._id } },
+      })
+      //console.log(data)
+      setChats(data)
+    } catch (error) {
+      toast({
+        title: 'Error Occured!',
+        description: 'Failed to Load the chats',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'bottom-left',
+      })
+    }
+  }
+
+  useEffect(() => {
+    fetchChats()
+  }, [fetchAgain])
 
   useEffect(() => {
     if (currentUser) {
@@ -19,36 +56,69 @@ export default function Contacts({ contacts, currentUser, changeChat }) {
     setCurrentSelected(index)
     changeChat(contact)
   }
+
+  const getSender = (currUser, users) => {
+    //console.log(users[0]._id === currUser._id ? users[1] : users[0])
+    return users[0]._id === currUser._id ? users[1] : users[0]  
+  }
+
+  // const getAvatarImage = (userId) => {
+  //   await axios.get(allUsersRoute, {
+  //   params: { user: { _id: userId } },
+  // })
+
   return (
     <>
       {currentUserName && currentUserImage && (
         <Container>
           <div className='brand'>
-            <img src={Logo} alt='logo' />
             <h3>NUSCourseChat</h3>
           </div>
+          <GroupChatModal>
+            <button className='create-group'>New Group Chat</button>
+          </GroupChatModal>
           <div className='contacts'>
-            {contacts.map((contact, index) => {
-              return (
-                <div
-                  key={index}
-                  className={`contact ${
-                    index === currentSelected ? 'selected' : ''
-                  }`}
-                  onClick={() => changeCurrentChat(index, contact)}
-                >
-                  <div className='avatar'>
-                    <img
-                      src={`data:image/svg+xml;base64,${contact.avatarImage}`}
-                      alt='avatar'
-                    />
+            {chats ? (
+              chats.map((contact, index) => {
+                //console.log(chats)
+                //console.log(contact)
+                return (
+                  <div
+                    key={index}
+                    className={`contact ${
+                      index === currentSelected ? 'selected' : ''
+                    }`}
+                    onClick={() => changeCurrentChat(index, contact)}
+                  >
+                    {!contact.isGroupChat ? (
+                      <>
+                        <div className='avatar'>
+
+                          <img
+                            src={`data:image/svg+xml;base64,${
+                              getSender(currentUser, contact.users).avatarImage
+                            }`}
+                            // src={`data:image/svg+xml;base64,${contact.avatarImage}`}
+                            alt='avatar'
+                          />
+                        </div>
+                        <div className='username'>
+                          <h3>
+                            {getSender(currentUser, contact.users).username}
+                          </h3>
+                        </div>
+                      </>
+                    ) : (
+                      <div className='username'>
+                        <h3>{contact.chatName}</h3>
+                      </div>
+                    )}
                   </div>
-                  <div className='username'>
-                    <h3>{contact.username}</h3>
-                  </div>
-                </div>
-              )
-            })}
+                )
+              })
+            ) : (
+              <ChatLoading />
+            )}
           </div>
           <div className='current-user'>
             <div className='avatar'>
@@ -147,6 +217,20 @@ const Container = styled.div`
           font-size: 1rem;
         }
       }
+    }
+  }
+  .create-group {
+    background-color: #997af0;
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 0.4rem;
+    font-size: 1rem;
+    text-transform: uppercase;
+    &:hover {
+      background-color: #4e0eff;
     }
   }
 `
