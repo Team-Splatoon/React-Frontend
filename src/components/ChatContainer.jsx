@@ -14,8 +14,15 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
   const [messages, setMessages] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const scrollRef = useRef();
-  const { currentUser, setCurrentUser, selectedChat, setSelectedChat } =
-    ChatState();
+  const {
+    currentUser,
+    setCurrentUser,
+    selectedChat,
+    setSelectedChat,
+    notification,
+    setNotification,
+  } = ChatState();
+  var selectedChatCompare;
 
   // const ENDPOINT = "http://localhost:4000"
   // const socket = io(ENDPOINT)
@@ -25,16 +32,18 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
 
   useEffect(() => {
     async function getCurrent() {
-      console.log(socket);
+      //console.log(socket);
       if (selectedChat && currentUser) {
-        console.log(selectedChat);
-        console.log(currentUser);
+        //console.log(selectedChat);
+        //console.log(currentUser);
         const { data } = await axios.post(getAllMessagesRoute, {
           from: currentUser._id,
           to: selectedChat._id,
         });
         setMessages(data);
-        console.log(socket.current);
+        selectedChatCompare = selectedChat;
+        //console.log(selectedChatCompare._id);
+        //console.log(socket.current);
         socket.current.emit("join_chat", selectedChat._id);
         //console.log(data)
       }
@@ -47,7 +56,7 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
     if (currentUser) {
       socket.current.emit("setup", currentUser);
       // socket.on("connected", () => setSocketConnected(true));
-      console.log(socket);
+      //console.log(socket);
     }
   }, []);
 
@@ -90,13 +99,25 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
   useEffect(() => {
     if (socket.current) {
       socket.current.on("msg_recieve", (msg) => {
-        console.log("msg: " + msg);
-        setArrivalMessage({
-          fromSelf: false,
-          message: msg.message,
-          time: msg.time,
-          name: msg.name,
-        });
+        //console.log(selectedChat._id);
+        //console.log(JSON.parse(msg).chat._id);
+        if (
+          !selectedChatCompare ||
+          selectedChatCompare._id !== JSON.parse(msg).chat._id
+        ) {
+          if (!notification.includes(JSON.parse(msg))) {
+            setNotification([JSON.parse(msg), ...notification]);
+            //console.log(notification._id);
+            setFetchAgain(!fetchAgain);
+          }
+        } else {
+          setArrivalMessage({
+            fromSelf: false,
+            message: msg.message,
+            time: msg.time,
+            name: msg.name,
+          });
+        }
       });
     }
   }, []);
