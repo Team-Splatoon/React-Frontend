@@ -59,7 +59,7 @@ export default function Contacts({ fetchAgain, changeChat }) {
 
   const getSender = (currUser, users) => {
     //console.log(users[0]._id === currUser._id ? users[1] : users[0])
-    return users[0]._id === currUser._id ? users[1] : users[0]  
+    return users[0]._id === currUser._id ? users[1] : users[0]
   }
 
   // const getAvatarImage = (userId) => {
@@ -74,9 +74,7 @@ export default function Contacts({ fetchAgain, changeChat }) {
           <div className='brand'>
             <h3>NUSCourseChat</h3>
           </div>
-          <GroupChatModal>
-            <button className='create-group'>New Group Chat</button>
-          </GroupChatModal>
+
           <div className='contacts'>
             {chats ? (
               chats.map((contact, index) => {
@@ -93,7 +91,6 @@ export default function Contacts({ fetchAgain, changeChat }) {
                     {!contact.isGroupChat ? (
                       <>
                         <div className='avatar'>
-
                           <img
                             src={`data:image/svg+xml;base64,${
                               getSender(currentUser, contact.users).avatarImage
@@ -120,6 +117,7 @@ export default function Contacts({ fetchAgain, changeChat }) {
               <ChatLoading />
             )}
           </div>
+
           <div className='current-user'>
             <div className='avatar'>
               <img

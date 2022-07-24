@@ -116,18 +116,18 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
           </Container>
         ) : (
           <Container>
-            {/* {
-              <UpdateGroupChatModal
-                fetchAgain={fetchAgain}
-                setFetchAgain={setFetchAgain}
-              />
-            } */}
             <div className='chat-header'>
               <div className='user-details'>
                 <div className='username'>
                   <h3>{selectedChat.chatName.toUpperCase()}</h3>
                 </div>
               </div>
+              {
+                <UpdateGroupChatModal
+                  fetchAgain={fetchAgain}
+                  setFetchAgain={setFetchAgain}
+                />
+              }
               <Logout />
             </div>
             <div className='chat-messages'>

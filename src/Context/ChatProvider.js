@@ -7,6 +7,9 @@ const ChatProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState()
   const [selectedChat, setSelectedChat] = useState()
   const [chats, setChats] = useState([])
+  const [currGroupNameList, setCurrGroupNameList] = useState([])
+  const [currGroupChatList, setCurrGroupChatList] = useState([])
+
   return (
     <ChatContext.Provider
       value={{
@@ -16,6 +19,10 @@ const ChatProvider = ({ children }) => {
         setSelectedChat,
         chats,
         setChats,
+        currGroupNameList,
+        setCurrGroupNameList,
+        currGroupChatList,
+        setCurrGroupChatList,
       }}
     >
       {children}
