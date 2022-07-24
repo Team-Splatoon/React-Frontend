@@ -1,54 +1,57 @@
-import React, { useState, useEffect, useRef } from "react";
-import styled from "styled-components";
-import axios from "axios";
-import { useNavigate } from "react-router";
-import { allUsersRoute, host } from "../utils/APIRoutes";
-import Contacts from "../components/Contacts";
-import Welcome from "../components/Welcome";
-import ChatContainer from "../components/ChatContainer";
-import { io } from "socket.io-client";
-import SideDrawer from "../components/miscellaneous/SideDrawer";
-import { Box } from "@chakra-ui/layout";
-import { ChatState } from "../Context/ChatProvider";
+import React, { useState, useEffect, useRef } from 'react'
+import styled from 'styled-components'
+import axios from 'axios'
+import { useNavigate } from 'react-router'
+import { allUsersRoute, host } from '../utils/APIRoutes'
+import Contacts from '../components/Contacts'
+import Welcome from '../components/Welcome'
+import ChatContainer from '../components/ChatContainer'
+import { io } from 'socket.io-client'
+import SideDrawer from '../components/miscellaneous/SideDrawer'
+import { Box } from '@chakra-ui/layout'
+import { ChatState } from '../Context/ChatProvider'
+import GroupChatModal from '../components/miscellaneous/GroupChatModal'
+import ChatLoading from '../components/ChatLoading'
+import { FormControl } from '@chakra-ui/react'
 
 function Chat() {
-  const socket = useRef(null);
+  const socket = useRef(null)
   // const ENDPOINT = "http://localhost:4000"
   // const socket = io(ENDPOINT)
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const { currentUser, setCurrentUser, selectedChat, setSelectedChat } =
-    ChatState();
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [fetchAgain, setFetchAgain] = useState(false);
-  const [socketConnected, setSocketConnected] = useState(false);
+    ChatState()
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [fetchAgain, setFetchAgain] = useState(false)
+  const [socketConnected, setSocketConnected] = useState(false)
 
   useEffect(() => {
     async function userCheck() {
-      if (!localStorage.getItem("chat-app-user")) {
-        navigate("/login");
+      if (!localStorage.getItem('chat-app-user')) {
+        navigate('/login')
       } else {
-        setCurrentUser(await JSON.parse(localStorage.getItem("chat-app-user")));
-        setIsLoaded(true);
+        setCurrentUser(await JSON.parse(localStorage.getItem('chat-app-user')))
+        setIsLoaded(true)
       }
     }
-    userCheck();
-  }, []);
+    userCheck()
+  }, [])
 
   useEffect(() => {
     if (currentUser) {
       if (socket.current == null) {
-        socket.current = io(host);
+        socket.current = io(host)
       }
       //console.log(socket.current)
-      const { current: socketRef } = socket;
+      const { current: socketRef } = socket
       try {
-        socketRef.open();
-        socketRef.emit("setup", currentUser);
+        socketRef.open()
+        socketRef.emit('setup', currentUser)
       } catch (e) {
-        console.log("setup error: " + e);
+        console.log('setup error: ' + e)
       }
     }
-  }, [currentUser]);
+  }, [currentUser])
 
   // useEffect(() => {
   //   if (currentUser) {
@@ -61,26 +64,35 @@ function Chat() {
 
   useEffect(() => {
     async function imageCheck() {
-      if (!JSON.parse(localStorage.getItem("chat-app-user")).isAvatarImageSet) {
-        navigate("/setavatar");
+      if (!JSON.parse(localStorage.getItem('chat-app-user')).isAvatarImageSet) {
+        navigate('/setavatar')
       }
       //console.log(currentUser)
       //console.log(JSON.parse(localStorage.getItem('chat-app-user')))
     }
-    imageCheck();
-  }, [currentUser]);
+    imageCheck()
+  }, [currentUser])
 
   const handleChatChange = (chat) => {
-    setSelectedChat(chat);
-  };
+    setSelectedChat(chat)
+  }
 
   return (
     <>
       <Container>
-        {isLoaded && <SideDrawer />}
-        <div className="container">
-          {isLoaded && (
+        {isLoaded && (
+          <FormControl display='flex' justifyContent='center'>
+            <SideDrawer />
+            <GroupChatModal>
+              <button className='create-group'>New Group Chat</button>
+            </GroupChatModal>
+          </FormControl>
+        )}
+        <div className='container'>
+          {isLoaded ? (
             <Contacts fetchAgain={fetchAgain} changeChat={handleChatChange} />
+          ) : (
+            <ChatLoading />
           )}
           {isLoaded && selectedChat === undefined ? (
             <Welcome currentUser={currentUser} />
@@ -94,7 +106,7 @@ function Chat() {
         </div>
       </Container>
     </>
-  );
+  )
 }
 
 const Container = styled.div`
@@ -116,6 +128,20 @@ const Container = styled.div`
       grid-template-columns: 35% 65%;
     }
   }
-`;
+  .create-group {
+    background-color: #997af0;
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 0.4rem;
+    font-size: 1rem;
+    text-transform: uppercase;
+    &:hover {
+      background-color: #4e0eff;
+    }
+  }
+`
 
-export default Chat;
+export default Chat
