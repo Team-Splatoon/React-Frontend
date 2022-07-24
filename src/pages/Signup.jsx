@@ -84,10 +84,6 @@ function Signup() {
       if (data.status === false) {
         toast.error(data.msg, toastOptions)
       }
-      if (data.status === true) {
-        localStorage.setItem('chat-app-user', JSON.stringify(data.user))
-        navigate('/')
-      }
 
       const currentUser = data.user
       const allCoursesSplit = [...coursesEnrolledSplit, ...coursesTeachSplit]
@@ -96,18 +92,18 @@ function Signup() {
           autoCreateGroupChatRoute,
           {
             groupNames: allCoursesSplit,
-            users: JSON.stringify(currentUser),
+            users: JSON.stringify(currentUser._id),
             currUser: currentUser,
-            currGroupExist: currGroupChatList,
+            currGroupChatExist: currGroupChatList,
           }
         )
+        console.log(newGroupChats)
         setChats([...newGroupChats, ...chats])
         setCurrGroupChatList([...newGroupChats, ...currGroupChatList])
         const deduplicateMergedCourses = allCoursesSplit
           .concat(currGroupNameList)
           .unique()
         setCurrGroupNameList(deduplicateMergedCourses)
-        onClose()
         toast({
           title: 'Auto Joined Groups Successfully!',
           status: 'success',
@@ -124,6 +120,11 @@ function Signup() {
           isClosable: true,
           position: 'bottom',
         })
+      }
+
+      if (data.status === true) {
+        localStorage.setItem('chat-app-user', JSON.stringify(data.user))
+        navigate('/')
       }
     }
   }

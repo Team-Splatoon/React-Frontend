@@ -28,7 +28,7 @@ export default function Contacts({ fetchAgain, changeChat }) {
       const { data } = await axios.get(fetchAllChatsRoute, {
         params: { user: { _id: currentUser._id } },
       })
-      //console.log(data)
+      console.log(data)
       setChats(data)
     } catch (error) {
       toast({
