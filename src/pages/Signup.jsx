@@ -4,9 +4,19 @@ import axios from 'axios'
 import { useNavigate, Link } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { signupRoute } from '../utils/APIRoutes'
+import { signupRoute, autoCreateGroupChatRoute } from '../utils/APIRoutes'
+import { ChatState } from '../Context/ChatProvider'
 
 function Signup() {
+  Array.prototype.unique = function () {
+    var a = this.concat()
+    for (var i = 0; i < a.length; ++i) {
+      for (var j = i + 1; j < a.length; ++j) {
+        if (a[i] === a[j]) a.splice(j--, 1)
+      }
+    }
+    return a
+  }
   const navigate = useNavigate()
   const toastOptions = {
     position: 'bottom-right',
@@ -15,6 +25,14 @@ function Signup() {
     draggable: true,
     theme: 'dark',
   }
+  const {
+    currGroupNameList,
+    setCurrGroupNameList,
+    currGroupChatList,
+    setCurrGroupChatList,
+    chats,
+    setChats,
+  } = ChatState()
 
   const [values, setValues] = useState({
     fullName: '',
@@ -46,11 +64,11 @@ function Signup() {
         coursesTeach,
       } = values
       const coursesEnrolledSplit = coursesEnrolled
-        .split(/\s*,\s*/)
+        .split(/\s*,+\s*/)
         .map((course) => course.toUpperCase())
 
       const coursesTeachSplit = coursesTeach
-        .split(/\s*,\s*/)
+        .split(/\s*,+\s*/)
         .map((course) => course.toUpperCase())
 
       const { data } = await axios.post(signupRoute, {
@@ -69,6 +87,48 @@ function Signup() {
       if (data.status === true) {
         localStorage.setItem('chat-app-user', JSON.stringify(data.user))
         navigate('/')
+      }
+
+      const currentUser = data.user
+      const allCoursesSplit = [...coursesEnrolledSplit, ...coursesTeachSplit]
+      console.log(allCoursesSplit)
+      console.log(JSON.stringify(currentUser._id))
+      console.log(currentUser)
+      console.log(currGroupChatList)
+
+      try {
+        const { data: newGroupChats } = await axios.post(
+          autoCreateGroupChatRoute,
+          {
+            groupNames: allCoursesSplit,
+            users: JSON.stringify(currentUser._id),
+            currUser: currentUser,
+            currGroupChatExist: currGroupChatList,
+          }
+        )
+        console.log(newGroupChats)
+        setChats([...newGroupChats, ...chats])
+        setCurrGroupChatList([...newGroupChats, ...currGroupChatList])
+        const deduplicateMergedCourses = allCoursesSplit
+          .concat(currGroupNameList)
+          .unique()
+        setCurrGroupNameList(deduplicateMergedCourses)
+        toast({
+          title: 'Auto Joined Groups Successfully!',
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+          position: 'bottom',
+        })
+      } catch (error) {
+        toast({
+          title: 'Failed to Join the Groups!',
+          description: error.response.data,
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+          position: 'bottom',
+        })
       }
     }
   }

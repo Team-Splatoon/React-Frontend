@@ -28,9 +28,9 @@ import {
   allUsersRoute,
 } from '../../utils/APIRoutes'
 
-const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
+const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [groupChatName, setGroupChatName] = useState()
+  const [groupChatName, setGroupChatName] = useState('')
   const [search, setSearch] = useState('')
   const [searchResult, setSearchResult] = useState([])
   const [loading, setLoading] = useState(false)
@@ -152,19 +152,34 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       })
       return
     }
+    if (
+      selectedChat.groupAdmin._id === currentUser._id &&
+      user1._id === currentUser._id
+    ) {
+      toast({
+        title: 'Admins cannot remove themselves!',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'bottom',
+      })
+      return
+    }
 
     try {
       setLoading(true)
+
       const { data } = await axios.put(removepplGroupChatRoute, {
         chatId: selectedChat._id,
         userId: user1._id,
       })
+      console.log(data)
 
       user1._id === currentUser._id ? setSelectedChat() : setSelectedChat(data)
       setFetchAgain(!fetchAgain)
-      fetchMessages()
       setLoading(false)
     } catch (error) {
+      console.log(error)
       toast({
         title: 'Error Occured!',
         description: error.response.data.message,
@@ -187,14 +202,14 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
           <ModalHeader
             fontSize='35px'
             fontFamily='Work sans'
-            d='flex'
+            display='flex'
             justifyContent='center'
           >
             {selectedChat.chatName}
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody d='flex' flexDir='column' alignItems='center'>
-            <Box w='100%' d='flex' flexWrap='wrap' pb={3}>
+          <ModalBody display='flex' flexDir='column' alignItems='center'>
+            <Box w='100%' display='flex' flexWrap='wrap' pb={3}>
               {selectedChat.users.map((u) => (
                 <UserBadgeItem
                   key={u._id}
@@ -204,7 +219,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                 />
               ))}
             </Box>
-            <FormControl d='flex'>
+            <FormControl display='flex'>
               <Input
                 placeholder='Chat Name'
                 mb={3}
@@ -251,5 +266,4 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     </>
   )
 }
-
 export default UpdateGroupChatModal

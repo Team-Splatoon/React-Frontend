@@ -84,16 +84,19 @@ function SideDrawer() {
       //     // Authorization: `Bearer ${currentUser.token}`,
       //   },
       // }
-      
+
       // const { data } = await axios.post(fetchAllChatsRoute, {
       //   userId,
       //   data: { user: { _id: currentUser._id } },
       // })
 
-      const { data } = await axios.post(fetchAllChatsRoute, { userId }, 
-      {
-        params: { user: { _id: currentUser._id } },
-      })
+      const { data } = await axios.post(
+        fetchAllChatsRoute,
+        { userId },
+        {
+          params: { user: { _id: currentUser._id } },
+        }
+      )
       if (!chats.find((c) => c._id === data._id)) {
         setChats([data, ...chats])
       }
@@ -117,15 +120,16 @@ function SideDrawer() {
         display='flex'
         justifyContent='space-between'
         alignItems='center'
-        bg='white'
-        w='90%'
+        bg='dark'
+        w='70%'
         p='5px 10px 5px 10px'
-        borderWidth='5px'
+        borderWidth='4px'
+        borderRadius='lg'
       >
         <Tooltip label='Search Users to chat' hasArrow placement='bottom-end'>
-          <Button variant='ghost' onClick={onOpen}>
+          <Button variant='ghost' onClick={onOpen} color='white'>
             <i className='fas fa-search'></i>
-            <Text d={{ base: 'none', md: 'flex' }} px={4}>
+            <Text d={{ base: 'none', md: 'flex' }} px={4} color='white'>
               Search User
             </Text>
           </Button>
@@ -159,7 +163,7 @@ function SideDrawer() {
         <DrawerContent>
           <DrawerHeader borderBottomWidth='1px'>Search Users</DrawerHeader>
           <DrawerBody>
-            <Box d='flex' pb={2}>
+            <Box display='flex' pb={2}>
               <Input
                 placeholder='Search by name or email'
                 mr={2}
@@ -179,23 +183,12 @@ function SideDrawer() {
                 />
               ))
             )}
-            {loadingChat && <Spinner ml='auto' d='flex' />}
+            {loadingChat && <Spinner ml='auto' display='flex' />}
           </DrawerBody>
         </DrawerContent>
       </Drawer>
     </>
   )
 }
-
-const Container = styled.div`
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: top;
-  gap: 1rem;
-  align-items: center;
-  background-color: #131324;
-`
 
 export default SideDrawer
