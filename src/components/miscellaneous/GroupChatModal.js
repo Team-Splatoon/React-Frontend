@@ -88,7 +88,7 @@ const GroupChatModal = ({ children }) => {
 
     try {
       const { data } = await axios.post(createGroupChatRoute, {
-        name: groupChatName,
+        name: groupChatName.toUpperCase(),
         users: JSON.stringify(selectedUsers.map((u) => u._id)),
         currUser: currentUser,
       })
@@ -117,7 +117,7 @@ const GroupChatModal = ({ children }) => {
     <>
       <span onClick={onOpen}>{children}</span>
 
-      <Modal onClose={onClose} isOpen={isOpen} isCentered>
+      <Modal onClose={onClose} isOpen={isOpen} isCentered='true'>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader

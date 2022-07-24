@@ -8,11 +8,10 @@ import Welcome from '../components/Welcome'
 import ChatContainer from '../components/ChatContainer'
 import { io } from 'socket.io-client'
 import SideDrawer from '../components/miscellaneous/SideDrawer'
-import { Box } from '@chakra-ui/layout'
+import { FormControl } from '@chakra-ui/react'
 import { ChatState } from '../Context/ChatProvider'
 import GroupChatModal from '../components/miscellaneous/GroupChatModal'
 import ChatLoading from '../components/ChatLoading'
-import { FormControl } from '@chakra-ui/react'
 
 function Chat() {
   const socket = useRef(null)
