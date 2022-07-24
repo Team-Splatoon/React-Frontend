@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import styled from 'styled-components'
+import { io } from 'socket.io-client'
 import Logout from './Logout'
 import ChatInput from './ChatInput'
 import axios from 'axios'
@@ -8,18 +9,22 @@ import { v4 as uuidv4 } from 'uuid'
 import { ChatState } from '../Context/ChatProvider'
 import UpdateGroupChatModal from './miscellaneous/UpdateGroupChatModal'
 
-export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
+export default function ChatContainer({ fetchAgain, setFetchAgain }) {
   const [messages, setMessages] = useState([])
   const [arrivalMessage, setArrivalMessage] = useState(null)
   const scrollRef = useRef()
   const { currentUser, setCurrentUser, selectedChat, setSelectedChat } =
     ChatState()
 
+  const ENDPOINT = "http://localhost:4000"
+  const socket = io(ENDPOINT)
+
   // const user = JSON.parse(localStorage.getItem('chat-app-user'))
   // setCurrentUser(user)
 
   useEffect(() => {
     async function getCurrent() {
+      console.log(socket)
       if (selectedChat && currentUser) {
         console.log(selectedChat)
         console.log(currentUser)
@@ -28,35 +33,55 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
           to: selectedChat._id,
         })
         setMessages(data)
-        console.log(data)
+        socket.emit("join chat", selectedChat._id)
+        //console.log(data)
       }
-      console.log(selectedChat, currentUser)
+      //console.log(selectedChat, currentUser)
     }
     getCurrent()
   }, [selectedChat, arrivalMessage, currentUser])
 
+  useEffect(() => {
+    if (currentUser) {
+      socket.emit("setup", currentUser);
+      // socket.on("connected", () => setSocketConnected(true));
+      console.log(socket)
+    }
+  }, [currentUser]);
+
   const handleSendMsg = async (msg) => {
-    console.log(getSender(currentUser, selectedChat.users)._id)
+    //console.log(getSender(currentUser, selectedChat.users)._id)
+    console.log(socket)
     await axios.post(sendMessageRoute, {
       from: currentUser._id,
       to: selectedChat._id,
       message: msg,
+      time:
+          new Date(Date.now()).getHours() +
+          ":" +
+          new Date(Date.now()).getMinutes(),
+      chat: selectedChat,
     })
-    socket.current.emit('send-msg', {
+    socket.emit("send-msg", {
       to: selectedChat._id,
       from: currentUser._id,
       message: msg,
+      time:
+          new Date(Date.now()).getHours() +
+          ":" +
+          new Date(Date.now()).getMinutes(),
+      chat: selectedChat,
     })
 
     const msgs = [...messages]
-    msgs.push({ fromSelf: true, message: msg })
+    msgs.push({ fromSelf: true, message: msg, time: msg.time})
     setMessages(msgs)
   }
 
   useEffect(() => {
-    if (socket.current) {
-      socket.current.on('msg-receive', (msg) => {
-        setArrivalMessage({ fromSelf: false, message: msg })
+    if (socket) {
+      socket.on("msg-recieve", (msg) => {
+        setArrivalMessage({ fromSelf: false, message: msg, time: msg.time })
       })
     }
   }, [])
@@ -142,6 +167,10 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
                       <div className='content'>
                         <p>{message.message}</p>
                       </div>
+                      <div className="message-meta">
+                        <p id="time">{message.time}</p>
+                        <p id="author">{message.from}</p>
+                      </div>
                     </div>
                   </div>
                 )
@@ -215,11 +244,19 @@ const Container = styled.div`
       .content {
         background-color: #4d04ff21;
       }
+      .message-meta {
+         justify-content: flex-end;
+         margin-left: 5px;
+      }
     }
     .received {
       justify-content: flex-start;
       .content {
         background-color: #9900ff20;
+      }
+      .message-meta {
+        justify-content: flex-start;
+        margin-right: 5px;
       }
     }
   }

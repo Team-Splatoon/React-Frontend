@@ -12,12 +12,15 @@ import { Box } from '@chakra-ui/layout'
 import { ChatState } from '../Context/ChatProvider'
 
 function Chat() {
-  const socket = useRef()
+  //const socket = useRef()
+  const ENDPOINT = "http://localhost:4000"
+  const socket = io(ENDPOINT)
   const navigate = useNavigate()
   const { currentUser, setCurrentUser, selectedChat, setSelectedChat } =
     ChatState()
   const [isLoaded, setIsLoaded] = useState(false)
   const [fetchAgain, setFetchAgain] = useState(false)
+  const [socketConnected, setSocketConnected] = useState(false);
 
   useEffect(() => {
     async function userCheck() {
@@ -31,12 +34,21 @@ function Chat() {
     userCheck()
   }, [])
 
-  useEffect(() => {
-    if (currentUser) {
-      socket.current = io(host)
-      socket.current.emit('add-user', currentUser._id)
-    }
-  }, [currentUser])
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     socket.current = io(host)
+  //     socket.current.emit('setup', currentUser)
+  //   }
+  // }, [currentUser])
+
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     //socket = io(ENDPOINT);
+  //     socket.emit("setup", currentUser);
+  //     socket.on("connected", () => setSocketConnected(true));
+  //     console.log(socket)
+  //   }
+  // }, [currentUser]);
 
   useEffect(() => {
     async function imageCheck() {
@@ -67,7 +79,7 @@ function Chat() {
             <ChatContainer
               fetchAgain={fetchAgain}
               setFetchAgain={setFetchAgain}
-              socket={socket}
+              //socket={socket}
             />
           )}
         </div>
