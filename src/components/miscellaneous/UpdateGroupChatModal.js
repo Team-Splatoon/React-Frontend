@@ -72,7 +72,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
 
       const { data } = await axios.put(renameGroupChatRoute, {
         chatId: selectedChat._id,
-        chatName: groupChatName,
+        chatName: groupChatName.toUpperCase(),
       })
       setSelectedChat(data)
       setFetchAgain(!fetchAgain)
