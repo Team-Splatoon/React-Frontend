@@ -117,7 +117,7 @@ const GroupChatModal = ({ children }) => {
     <>
       <span onClick={onOpen}>{children}</span>
 
-      <Modal onClose={onClose} isOpen={isOpen} isCentered='true'>
+      <Modal onClose={onClose} isOpen={isOpen} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader

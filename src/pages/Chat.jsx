@@ -14,12 +14,15 @@ import GroupChatModal from '../components/miscellaneous/GroupChatModal'
 import ChatLoading from '../components/ChatLoading'
 
 function Chat() {
-  const socket = useRef()
+  const socket = useRef(null)
+  // const ENDPOINT = "http://localhost:4000"
+  // const socket = io(ENDPOINT)
   const navigate = useNavigate()
   const { currentUser, setCurrentUser, selectedChat, setSelectedChat } =
     ChatState()
   const [isLoaded, setIsLoaded] = useState(false)
   const [fetchAgain, setFetchAgain] = useState(false)
+  const [socketConnected, setSocketConnected] = useState(false)
 
   useEffect(() => {
     async function userCheck() {
@@ -35,10 +38,28 @@ function Chat() {
 
   useEffect(() => {
     if (currentUser) {
-      socket.current = io(host)
-      socket.current.emit('add-user', currentUser._id)
+      if (socket.current == null) {
+        socket.current = io(host)
+      }
+      //console.log(socket.current)
+      const { current: socketRef } = socket
+      try {
+        socketRef.open()
+        socketRef.emit('setup', currentUser)
+      } catch (e) {
+        console.log('setup error: ' + e)
+      }
     }
   }, [currentUser])
+
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     //socket = io(ENDPOINT);
+  //     socket.emit("setup", currentUser);
+  //     socket.on("connected", () => setSocketConnected(true));
+  //     console.log(socket)
+  //   }
+  // }, [currentUser]);
 
   useEffect(() => {
     async function imageCheck() {

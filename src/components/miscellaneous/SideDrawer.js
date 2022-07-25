@@ -3,7 +3,7 @@ import { useDisclosure } from '@chakra-ui/hooks'
 import { Input } from '@chakra-ui/input'
 import { Box, Text } from '@chakra-ui/layout'
 import styled from 'styled-components'
-import { Menu, MenuButton, Tooltip } from '@chakra-ui/react'
+import { Menu, MenuButton, Tooltip, MenuList, MenuItem } from '@chakra-ui/react'
 import { BellIcon } from '@chakra-ui/icons'
 import { useState } from 'react'
 import axios from 'axios'
@@ -19,6 +19,7 @@ import {
 import { ChatState } from '../../Context/ChatProvider'
 import ChatLoading from '../ChatLoading'
 import UserListItem from '../UserAvatar/UserListItem'
+import NotificationBadge, { Effect } from 'react-notification-badge'
 import { allUsersRoute, fetchAllChatsRoute } from '../../utils/APIRoutes'
 
 function SideDrawer() {
@@ -26,10 +27,22 @@ function SideDrawer() {
   const [searchResult, setSearchResult] = useState([])
   const [loading, setLoading] = useState(false)
   const [loadingChat, setLoadingChat] = useState(false)
-  const { currentUser, setSelectedChat, chats, setChats } = ChatState()
+  const {
+    currentUser,
+    setSelectedChat,
+    chats,
+    setChats,
+    notification,
+    setNotification,
+  } = ChatState()
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const toast = useToast()
+
+  const getSender = (currUser, users) => {
+    //console.log(users[0]._id === currUser._id ? users[1] : users[0])
+    return users[0]._id === currUser._id ? users[1] : users[0]
+  }
 
   const handleSearch = async () => {
     if (!search) {
@@ -131,9 +144,31 @@ function SideDrawer() {
         <div>
           <Menu>
             <MenuButton p={1}>
+              <NotificationBadge
+                count={notification.length}
+                effect={Effect.SCALE}
+              />
               <BellIcon fontSize='2xl' m={1} color='white' />
             </MenuButton>
-            {/* <MenuList></MenuList> */}
+            <MenuList paddingLeft={2}>
+              {!notification.length && 'No New Messages'}
+              {notification.map((notif) => (
+                <MenuItem
+                  key={notif._id}
+                  onClick={() => {
+                    setSelectedChat(notif.chat)
+                    setNotification(notification.filter((n) => n !== notif))
+                  }}
+                >
+                  {notif.chat.isGroupChat
+                    ? `New Message in ${notif.chat.chatName}`
+                    : `New Message from ${getSender(
+                        currentUser,
+                        notif.chat.users
+                      )}`}
+                </MenuItem>
+              ))}
+            </MenuList>
           </Menu>
         </div>
       </Box>

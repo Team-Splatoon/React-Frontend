@@ -64,11 +64,11 @@ function Signup() {
         coursesTeach,
       } = values
       const coursesEnrolledSplit = coursesEnrolled
-        .split(/\s*,\s*/)
+        .split(/\s*,+\s*/)
         .map((course) => course.toUpperCase())
 
       const coursesTeachSplit = coursesTeach
-        .split(/\s*,\s*/)
+        .split(/\s*,+\s*/)
         .map((course) => course.toUpperCase())
 
       const { data } = await axios.post(signupRoute, {
@@ -91,16 +91,22 @@ function Signup() {
 
       const currentUser = data.user
       const allCoursesSplit = [...coursesEnrolledSplit, ...coursesTeachSplit]
+      console.log(allCoursesSplit)
+      console.log(JSON.stringify(currentUser._id))
+      console.log(currentUser)
+      console.log(currGroupChatList)
+
       try {
         const { data: newGroupChats } = await axios.post(
           autoCreateGroupChatRoute,
           {
             groupNames: allCoursesSplit,
-            users: JSON.stringify(currentUser),
+            users: JSON.stringify(currentUser._id),
             currUser: currentUser,
-            currGroupExist: currGroupChatList,
+            currGroupChatExist: currGroupChatList,
           }
         )
+        console.log(newGroupChats)
         setChats([...newGroupChats, ...chats])
         setCurrGroupChatList([...newGroupChats, ...currGroupChatList])
         const deduplicateMergedCourses = allCoursesSplit

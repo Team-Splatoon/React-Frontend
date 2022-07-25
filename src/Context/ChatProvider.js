@@ -9,7 +9,8 @@ const ChatProvider = ({ children }) => {
   const [chats, setChats] = useState([])
   const [currGroupNameList, setCurrGroupNameList] = useState([])
   const [currGroupChatList, setCurrGroupChatList] = useState([])
-
+  const [notification, setNotification] = useState([])
+  
   return (
     <ChatContext.Provider
       value={{
@@ -23,6 +24,8 @@ const ChatProvider = ({ children }) => {
         setCurrGroupNameList,
         currGroupChatList,
         setCurrGroupChatList,
+        notification,
+        setNotification,
       }}
     >
       {children}
