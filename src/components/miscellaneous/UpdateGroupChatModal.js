@@ -72,7 +72,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
 
       const { data } = await axios.put(renameGroupChatRoute, {
         chatId: selectedChat._id,
-        chatName: groupChatName,
+        chatName: groupChatName.toUpperCase(),
       })
       setSelectedChat(data)
       setFetchAgain(!fetchAgain)
@@ -196,7 +196,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
     <>
       <IconButton d={{ base: 'flex' }} icon={<ViewIcon />} onClick={onOpen} />
 
-      <Modal onClose={onClose} isOpen={isOpen} isCentered>
+      <Modal onClose={onClose} isOpen={isOpen} isCentered='true'>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader
