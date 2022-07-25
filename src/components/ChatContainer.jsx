@@ -22,7 +22,9 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
     notification,
     setNotification,
   } = ChatState();
-  var selectedChatCompare;
+  //var selectedChatCompare;
+
+  const [selectedChatCompare, setSelectedChatCompare] = useState(null);
 
   // const ENDPOINT = "http://localhost:4000"
   // const socket = io(ENDPOINT)
@@ -41,7 +43,7 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
           to: selectedChat._id,
         });
         setMessages(data);
-        selectedChatCompare = selectedChat;
+        setSelectedChatCompare(selectedChat);
         //console.log(selectedChatCompare._id);
         //console.log(socket.current);
         socket.current.emit("join_chat", selectedChat._id);
@@ -50,7 +52,7 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
       //console.log(selectedChat, currentUser)
     }
     getCurrent();
-  }, [selectedChat, arrivalMessage, currentUser]);
+  }, [selectedChat, selectedChatCompare, arrivalMessage, currentUser]);
 
   useEffect(() => {
     if (currentUser) {
@@ -99,28 +101,35 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
   useEffect(() => {
     if (socket.current) {
       socket.current.on("msg_recieve", (msg) => {
-        //console.log(selectedChat._id);
-        //console.log(JSON.parse(msg).chat._id);
+        // console.log("selected chat: " + selectedChat);
+        // console.log("selected chat compare: " + selectedChatCompare._id);
+        // console.log("message chat: " + JSON.parse(msg).chat._id);
+        // console.log(
+        //   selectedChatCompare &&
+        //     selectedChatCompare._id !== JSON.parse(msg).chat._id
+        // );
         if (
-          !selectedChatCompare ||
+          selectedChatCompare &&
           selectedChatCompare._id !== JSON.parse(msg).chat._id
         ) {
-          if (!notification.includes(JSON.parse(msg))) {
-            setNotification([JSON.parse(msg), ...notification]);
-            //console.log(notification._id);
-            setFetchAgain(!fetchAgain);
+          if (!notification.includes(JSON.parse(msg)._id)) {
+            console.log(notification);
+            console.log(JSON.parse(msg));
+            setNotification((prev) => [JSON.parse(msg), ...prev]);
+            setFetchAgain(false);
+            socket.current.removeEventListener();
           }
-        } else {
-          setArrivalMessage({
-            fromSelf: false,
-            message: msg.message,
-            time: msg.time,
-            name: msg.name,
-          });
         }
+        setArrivalMessage({
+          fromSelf: false,
+          message: msg.message,
+          time: msg.time,
+          name: msg.name,
+        });
+        //socket.current.removeAllListeners();
       });
     }
-  }, []);
+  }, [selectedChatCompare, selectedChat, notification]);
 
   useEffect(() => {
     arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
@@ -176,9 +185,9 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
           </Container>
         ) : (
           <Container>
-            <div className='chat-header'>
-              <div className='user-details'>
-                <div className='username'>
+            <div className="chat-header">
+              <div className="user-details">
+                <div className="username">
                   <h3>{selectedChat.chatName.toUpperCase()}</h3>
                 </div>
               </div>

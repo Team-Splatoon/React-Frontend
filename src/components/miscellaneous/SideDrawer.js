@@ -157,7 +157,7 @@ function SideDrawer() {
                   key={notif._id}
                   onClick={() => {
                     setSelectedChat(notif.chat)
-                    setNotification(notification.filter((n) => n !== notif))
+                    setNotification(notification.filter((n) => n.chat._id !== notif.chat._id))
                   }}
                 >
                   {notif.chat.isGroupChat
@@ -165,7 +165,7 @@ function SideDrawer() {
                     : `New Message from ${getSender(
                         currentUser,
                         notif.chat.users
-                      )}`}
+                      ).username}`}
                 </MenuItem>
               ))}
             </MenuList>
