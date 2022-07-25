@@ -88,7 +88,7 @@ const GroupChatModal = ({ children }) => {
 
     try {
       const { data } = await axios.post(createGroupChatRoute, {
-        name: groupChatName,
+        name: groupChatName.toUpperCase(),
         users: JSON.stringify(selectedUsers.map((u) => u._id)),
         currUser: currentUser,
       })

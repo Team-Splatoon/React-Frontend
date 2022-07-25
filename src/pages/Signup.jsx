@@ -107,7 +107,6 @@ function Signup() {
           .concat(currGroupNameList)
           .unique()
         setCurrGroupNameList(deduplicateMergedCourses)
-        onClose()
         toast({
           title: 'Auto Joined Groups Successfully!',
           status: 'success',
