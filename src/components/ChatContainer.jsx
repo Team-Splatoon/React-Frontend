@@ -55,7 +55,7 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
   }, [selectedChat, selectedChatCompare, arrivalMessage, currentUser]);
 
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser && socket.current) {
       socket.current.emit("setup", currentUser);
       // socket.on("connected", () => setSocketConnected(true));
       //console.log(socket);
