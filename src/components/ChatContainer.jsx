@@ -100,6 +100,7 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
 
   useEffect(() => {
     if (socket.current) {
+      socket.current.removeAllListeners();
       socket.current.on("msg_recieve", (msg) => {
         // console.log("selected chat: " + selectedChat);
         // console.log("selected chat compare: " + selectedChatCompare._id);

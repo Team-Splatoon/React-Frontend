@@ -36,7 +36,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
   const [loading, setLoading] = useState(false)
   const [renameloading, setRenameLoading] = useState(false)
   const toast = useToast()
-
+  const [updateAgain, setUpdateAgain] = useState(false)
   const { selectedChat, setSelectedChat, currentUser } = ChatState()
 
   const handleSearch = async (query) => {
@@ -178,6 +178,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
       user1._id === currentUser._id ? setSelectedChat() : setSelectedChat(data)
       setFetchAgain(!fetchAgain)
       setLoading(false)
+      setUpdateAgain(!updateAgain)
     } catch (error) {
       console.log(error)
       toast({
