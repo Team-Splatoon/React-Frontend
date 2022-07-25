@@ -174,9 +174,18 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
                         message.fromSelf ? "sended" : "received"
                       }`}
                     >
-                      <div className="content">
-                        <p>{message.message}</p>
-                      </div>
+                      <Grid templateRows="repeat(1,1fr)">
+                        <GridItem
+                          className="content"
+                          rowSpan={"auto"}
+                          height="auto"
+                        >
+                          <Text>{message.message}</Text>
+                        </GridItem>
+                        <GridItem className="message-meta" rowSpan={"auto"}>
+                          <p id="time">{message.time}</p>
+                        </GridItem>
+                      </Grid>
                     </div>
                   </div>
                 );
