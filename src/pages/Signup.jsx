@@ -106,7 +106,6 @@ function Signup() {
             currGroupChatExist: currGroupChatList,
           }
         )
-        console.log(newGroupChats)
         setChats([...newGroupChats, ...chats])
         setCurrGroupChatList([...newGroupChats, ...currGroupChatList])
         const deduplicateMergedCourses = allCoursesSplit

@@ -40,7 +40,6 @@ function SideDrawer() {
   const toast = useToast()
 
   const getSender = (currUser, users) => {
-    //console.log(users[0]._id === currUser._id ? users[1] : users[0])
     return users[0]._id === currUser._id ? users[1] : users[0]
   }
 
@@ -157,15 +156,16 @@ function SideDrawer() {
                   key={notif._id}
                   onClick={() => {
                     setSelectedChat(notif.chat)
-                    setNotification(notification.filter((n) => n.chat._id !== notif.chat._id))
+                    setNotification(
+                      notification.filter((n) => n.chat._id !== notif.chat._id)
+                    )
                   }}
                 >
                   {notif.chat.isGroupChat
                     ? `New Message in ${notif.chat.chatName}`
-                    : `New Message from ${getSender(
-                        currentUser,
-                        notif.chat.users
-                      ).username}`}
+                    : `New Message from ${
+                        getSender(currentUser, notif.chat.users).username
+                      }`}
                 </MenuItem>
               ))}
             </MenuList>

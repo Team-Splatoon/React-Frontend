@@ -41,7 +41,6 @@ function Chat() {
       if (socket.current == null) {
         socket.current = io(host)
       }
-      //console.log(socket.current)
       const { current: socketRef } = socket
       try {
         socketRef.open()
@@ -52,22 +51,11 @@ function Chat() {
     }
   }, [currentUser])
 
-  // useEffect(() => {
-  //   if (currentUser) {
-  //     //socket = io(ENDPOINT);
-  //     socket.emit("setup", currentUser);
-  //     socket.on("connected", () => setSocketConnected(true));
-  //     console.log(socket)
-  //   }
-  // }, [currentUser]);
-
   useEffect(() => {
     async function imageCheck() {
       if (!JSON.parse(localStorage.getItem('chat-app-user')).isAvatarImageSet) {
         navigate('/setavatar')
       }
-      //console.log(currentUser)
-      //console.log(JSON.parse(localStorage.getItem('chat-app-user')))
     }
     imageCheck()
   }, [currentUser])

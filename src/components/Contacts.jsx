@@ -18,17 +18,10 @@ export default function Contacts({ fetchAgain, changeChat }) {
 
   const fetchChats = async () => {
     try {
-      // const config = {
-      //   headers: {
-      //     // Authorization: `Bearer ${currentUser.token}`,
-      //   },
-      // }
       const user = await JSON.parse(localStorage.getItem('chat-app-user'))
-      //console.log(user)
       const { data } = await axios.get(fetchAllChatsRoute, {
         params: { user: { _id: currentUser._id } },
       })
-      console.log(data)
       setChats(data)
     } catch (error) {
       toast({
@@ -58,7 +51,6 @@ export default function Contacts({ fetchAgain, changeChat }) {
   }
 
   const getSender = (currUser, users) => {
-    //console.log(users[0]._id === currUser._id ? users[1] : users[0])
     return users[0]._id === currUser._id ? users[1] : users[0]
   }
 
@@ -78,8 +70,6 @@ export default function Contacts({ fetchAgain, changeChat }) {
           <div className='contacts'>
             {chats ? (
               chats.map((contact, index) => {
-                //console.log(chats)
-                //console.log(contact)
                 return (
                   <div
                     key={index}

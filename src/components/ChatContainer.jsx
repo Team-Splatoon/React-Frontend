@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
-import styled from "styled-components";
-import { io } from "socket.io-client";
-import Logout from "./Logout";
-import ChatInput from "./ChatInput";
-import axios from "axios";
-import { getAllMessagesRoute, sendMessageRoute } from "../utils/APIRoutes";
-import { v4 as uuidv4 } from "uuid";
-import { ChatState } from "../Context/ChatProvider";
-import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
-import { Grid, GridItem, Text } from "@chakra-ui/react";
+import React, { useState, useEffect, useRef } from 'react'
+import styled from 'styled-components'
+import { io } from 'socket.io-client'
+import Logout from './Logout'
+import ChatInput from './ChatInput'
+import axios from 'axios'
+import { getAllMessagesRoute, sendMessageRoute } from '../utils/APIRoutes'
+import { v4 as uuidv4 } from 'uuid'
+import { ChatState } from '../Context/ChatProvider'
+import UpdateGroupChatModal from './miscellaneous/UpdateGroupChatModal'
+import { Grid, GridItem, Text } from '@chakra-ui/react'
 
 export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
-  const [messages, setMessages] = useState([]);
-  const [arrivalMessage, setArrivalMessage] = useState(null);
-  const scrollRef = useRef();
+  const [messages, setMessages] = useState([])
+  const [arrivalMessage, setArrivalMessage] = useState(null)
+  const scrollRef = useRef()
   const {
     currentUser,
     setCurrentUser,
@@ -21,10 +21,10 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
     setSelectedChat,
     notification,
     setNotification,
-  } = ChatState();
+  } = ChatState()
   //var selectedChatCompare;
 
-  const [selectedChatCompare, setSelectedChatCompare] = useState(null);
+  const [selectedChatCompare, setSelectedChatCompare] = useState(null)
 
   // const ENDPOINT = "http://localhost:4000"
   // const socket = io(ENDPOINT)
@@ -34,40 +34,29 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
 
   useEffect(() => {
     async function getCurrent() {
-      //console.log(socket);
       if (selectedChat && currentUser) {
-        //console.log(selectedChat);
-        //console.log(currentUser);
         const { data } = await axios.post(getAllMessagesRoute, {
           from: currentUser._id,
           to: selectedChat._id,
-        });
-        setMessages(data);
-        setSelectedChatCompare(selectedChat);
-        //console.log(selectedChatCompare._id);
-        //console.log(socket.current);
-        socket.current.emit("join_chat", selectedChat._id);
-        //console.log(data)
+        })
+        setMessages(data)
+        setSelectedChatCompare(selectedChat)
+        socket.current.emit('join_chat', selectedChat._id)
       }
-      //console.log(selectedChat, currentUser)
     }
-    getCurrent();
-  }, [selectedChat, selectedChatCompare, arrivalMessage, currentUser]);
+    getCurrent()
+  }, [selectedChat, selectedChatCompare, arrivalMessage, currentUser])
 
   useEffect(() => {
     if (currentUser && socket.current) {
-      socket.current.emit("setup", currentUser);
-      // socket.on("connected", () => setSocketConnected(true));
-      //console.log(socket);
+      socket.current.emit('setup', currentUser)
     }
-  }, []);
+  }, [])
 
   const handleSendMsg = async (msg) => {
-    //console.log(getSender(currentUser, selectedChat.users)._id)
-    // console.log(socket);
     const sendTime =
-      new Date(Date.now()).getHours() + ":" + new Date(Date.now()).getMinutes();
-    //console.log(currentUser.username);
+      new Date(Date.now()).getHours() + ':' + new Date(Date.now()).getMinutes()
+
     await axios.post(sendMessageRoute, {
       from: currentUser._id,
       name: currentUser.username,
@@ -75,15 +64,15 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
       message: msg,
       time: sendTime,
       chat: selectedChat,
-    });
-    socket.current.emit("send_msg", {
+    })
+    socket.current.emit('send_msg', {
       to: selectedChat._id,
       from: currentUser._id,
       name: currentUser.username,
       message: msg,
       time: sendTime,
       chat: selectedChat,
-    });
+    })
 
     // const msgs = [...messages];
     // msgs.push({ fromSelf: true, message: msg, time: msg.time });
@@ -95,30 +84,23 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
         time: sendTime,
         name: currentUser.username,
       },
-    ]);
-  };
+    ])
+  }
 
   useEffect(() => {
     if (socket.current) {
-      socket.current.removeAllListeners();
-      socket.current.on("msg_recieve", (msg) => {
-        // console.log("selected chat: " + selectedChat);
-        // console.log("selected chat compare: " + selectedChatCompare._id);
-        // console.log("message chat: " + JSON.parse(msg).chat._id);
-        // console.log(
-        //   selectedChatCompare &&
-        //     selectedChatCompare._id !== JSON.parse(msg).chat._id
-        // );
+      socket.current.removeAllListeners()
+      socket.current.on('msg_recieve', (msg) => {
         if (
           selectedChatCompare &&
           selectedChatCompare._id !== JSON.parse(msg).chat._id
         ) {
           if (!notification.includes(JSON.parse(msg)._id)) {
-            console.log(notification);
-            console.log(JSON.parse(msg));
-            setNotification((prev) => [JSON.parse(msg), ...prev]);
-            setFetchAgain(false);
-            socket.current.removeEventListener();
+            console.log(notification)
+            console.log(JSON.parse(msg))
+            setNotification((prev) => [JSON.parse(msg), ...prev])
+            setFetchAgain(false)
+            socket.current.removeEventListener()
           }
         }
         setArrivalMessage({
@@ -126,78 +108,78 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
           message: msg.message,
           time: msg.time,
           name: msg.name,
-        });
+        })
         //socket.current.removeAllListeners();
-      });
+      })
     }
-  }, [selectedChatCompare, selectedChat, notification]);
+  }, [selectedChatCompare, selectedChat, notification])
 
   useEffect(() => {
-    arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
-  }, [arrivalMessage]);
+    arrivalMessage && setMessages((prev) => [...prev, arrivalMessage])
+  }, [arrivalMessage])
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behaviour: "smooth" });
-  }, [messages]);
+    scrollRef.current?.scrollIntoView({ behaviour: 'smooth' })
+  }, [messages])
 
   const getSender = (currUser, users) => {
-    return users[0]._id === currUser._id ? users[1] : users[0];
-  };
+    return users[0]._id === currUser._id ? users[1] : users[0]
+  }
 
   return (
     <>
       {selectedChat &&
         (!selectedChat.isGroupChat ? (
           <Container>
-            <div className="chat-header">
-              <div className="user-details">
-                <div className="avatar">
+            <div className='chat-header'>
+              <div className='user-details'>
+                <div className='avatar'>
                   <img
                     src={`data:image/svg+xml;base64,${
                       getSender(currentUser, selectedChat.users).avatarImage
                     }`}
-                    alt="avatar"
+                    alt='avatar'
                   />
                 </div>
-                <div className="username">
+                <div className='username'>
                   <h3>{getSender(currentUser, selectedChat.users).username}</h3>
                 </div>
               </div>
               <Logout />
             </div>
-            <div className="chat-messages">
+            <div className='chat-messages'>
               {messages.map((message) => {
                 return (
                   <div ref={scrollRef} key={uuidv4()}>
                     <div
                       className={`message ${
-                        message.fromSelf ? "sended" : "received"
+                        message.fromSelf ? 'sended' : 'received'
                       }`}
                     >
-                      <Grid templateRows="repeat(1,1fr)">
+                      <Grid templateRows='repeat(1,1fr)'>
                         <GridItem
-                          className="content"
-                          rowSpan={"auto"}
-                          height="auto"
+                          className='content'
+                          rowSpan={'auto'}
+                          height='auto'
                         >
                           <Text>{message.message}</Text>
                         </GridItem>
-                        <GridItem className="message-meta" rowSpan={"auto"}>
-                          <p id="time">{message.time}</p>
+                        <GridItem className='message-meta' rowSpan={'auto'}>
+                          <p id='time'>{message.time}</p>
                         </GridItem>
                       </Grid>
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
             <ChatInput handleSendMsg={handleSendMsg} />
           </Container>
         ) : (
           <Container>
-            <div className="chat-header">
-              <div className="user-details">
-                <div className="username">
+            <div className='chat-header'>
+              <div className='user-details'>
+                <div className='username'>
                   <h3>{selectedChat.chatName.toUpperCase()}</h3>
                 </div>
               </div>
@@ -209,25 +191,25 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
               }
               <Logout />
             </div>
-            <div className="chat-messages">
+            <div className='chat-messages'>
               {messages.map((message) => {
                 return (
                   <div ref={scrollRef} key={uuidv4()}>
                     <div
                       className={`message ${
-                        message.fromSelf ? "sended" : "received"
+                        message.fromSelf ? 'sended' : 'received'
                       }`}
                     >
-                      <Grid templateRows="repeat(1,1fr)">
+                      <Grid templateRows='repeat(1,1fr)'>
                         <GridItem
-                          className="content"
-                          rowSpan={"auto"}
-                          height="auto"
+                          className='content'
+                          rowSpan={'auto'}
+                          height='auto'
                         >
                           <Text>{message.message}</Text>
                         </GridItem>
-                        <GridItem className="message-meta" rowSpan={"auto"}>
-                          <p id="time">
+                        <GridItem className='message-meta' rowSpan={'auto'}>
+                          <p id='time'>
                             {message.name}
                             {message.time}
                           </p>
@@ -235,14 +217,14 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
                       </Grid>
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
             <ChatInput handleSendMsg={handleSendMsg} />
           </Container>
         ))}
     </>
-  );
+  )
 }
 
 const Container = styled.div`
@@ -324,4 +306,4 @@ const Container = styled.div`
       }
     }
   }
-`;
+`
