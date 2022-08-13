@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import Logo from '../assets/logo.svg'
 import { ChatState } from '../Context/ChatProvider'
 import axios from 'axios'
 import ChatLoading from './ChatLoading'
 import { useToast } from '@chakra-ui/toast'
 import { allUsersRoute, fetchAllChatsRoute } from '../utils/APIRoutes'
-import GroupChatModal from './miscellaneous/GroupChatModal'
 
 export default function Contacts({ fetchAgain, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined)
   const [currentUserImage, setCurrentUserImage] = useState(undefined)
   const [currentSelected, setCurrentSelected] = useState(undefined)
-  const { selectedChat, setSelectedChat, currentUser, chats, setChats } =
-    ChatState()
+  const { currentUser, chats, setChats } = ChatState()
   const toast = useToast()
+
+  console.log(chats)
 
   const fetchChats = async () => {
     try {
-      const user = await JSON.parse(localStorage.getItem('chat-app-user'))
       const { data } = await axios.get(fetchAllChatsRoute, {
         params: { user: { _id: currentUser._id } },
       })
@@ -38,6 +36,7 @@ export default function Contacts({ fetchAgain, changeChat }) {
   useEffect(() => {
     fetchChats()
   }, [fetchAgain])
+  console.log(chats)
 
   useEffect(() => {
     if (currentUser) {

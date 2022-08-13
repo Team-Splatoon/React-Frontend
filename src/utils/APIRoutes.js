@@ -11,3 +11,4 @@ export const renameGroupChatRoute = `${host}/api/chat/rename`
 export const removepplGroupChatRoute = `${host}/api/chat/groupremove`
 export const addpplGroupChatRoute = `${host}/api/chat/groupadd`
 export const autoCreateGroupChatRoute = `${host}/api/chat/autocreate`
+export const fetchAllGroupChatsRoute = `${host}/api/chat/fetchGroupChats`

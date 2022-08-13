@@ -4,7 +4,11 @@ import axios from 'axios'
 import { useNavigate, Link } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { signupRoute, autoCreateGroupChatRoute } from '../utils/APIRoutes'
+import {
+  signupRoute,
+  autoCreateGroupChatRoute,
+  fetchAllGroupChatsRoute,
+} from '../utils/APIRoutes'
 import { ChatState } from '../Context/ChatProvider'
 
 function Signup() {
@@ -90,11 +94,29 @@ function Signup() {
       }
 
       const currentUser = data.user
-      const allCoursesSplit = [...coursesEnrolledSplit, ...coursesTeachSplit]
+      const allCoursesSplit = [
+        ...coursesEnrolledSplit,
+        ...coursesTeachSplit,
+      ].filter((course) => course !== '')
       console.log(allCoursesSplit)
       console.log(JSON.stringify(currentUser._id))
       console.log(currentUser)
       console.log(currGroupChatList)
+
+      try {
+        const { data: groupChats } = await axios.get(fetchAllGroupChatsRoute)
+        setCurrGroupChatList(groupChats)
+        console.log(groupChats)
+      } catch (error) {
+        toast({
+          title: 'Error Occured!',
+          description: 'Failed to Load the chats',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+          position: 'bottom-left',
+        })
+      }
 
       try {
         const { data: newGroupChats } = await axios.post(
@@ -106,8 +128,8 @@ function Signup() {
             currGroupChatExist: currGroupChatList,
           }
         )
-        setChats([...newGroupChats, ...chats])
-        setCurrGroupChatList([...newGroupChats, ...currGroupChatList])
+        console.log(newGroupChats)
+        setChats(newGroupChats.concat(chats))
         const deduplicateMergedCourses = allCoursesSplit
           .concat(currGroupNameList)
           .unique()
@@ -129,6 +151,9 @@ function Signup() {
           position: 'bottom',
         })
       }
+
+      console.log(chats)
+      console.log(currGroupChatList)
     }
   }
 
