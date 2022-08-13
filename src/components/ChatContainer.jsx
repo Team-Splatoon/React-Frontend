@@ -22,15 +22,8 @@ export default function ChatContainer({ socket, fetchAgain, setFetchAgain }) {
     notification,
     setNotification,
   } = ChatState()
-  //var selectedChatCompare;
 
   const [selectedChatCompare, setSelectedChatCompare] = useState(null)
-
-  // const ENDPOINT = "http://localhost:4000"
-  // const socket = io(ENDPOINT)
-
-  // const user = JSON.parse(localStorage.getItem('chat-app-user'))
-  // setCurrentUser(user)
 
   useEffect(() => {
     async function getCurrent() {

@@ -29,14 +29,8 @@ function Signup() {
     draggable: true,
     theme: 'dark',
   }
-  const {
-    currGroupNameList,
-    setCurrGroupNameList,
-    currGroupChatList,
-    setCurrGroupChatList,
-    chats,
-    setChats,
-  } = ChatState()
+  const { currGroupNameList, setCurrGroupNameList, chats, setChats } =
+    ChatState()
 
   const [values, setValues] = useState({
     fullName: '',
@@ -98,37 +92,18 @@ function Signup() {
         ...coursesEnrolledSplit,
         ...coursesTeachSplit,
       ].filter((course) => course !== '')
-      console.log(allCoursesSplit)
-      console.log(JSON.stringify(currentUser._id))
-      console.log(currentUser)
-      console.log(currGroupChatList)
 
       try {
         const { data: groupChats } = await axios.get(fetchAllGroupChatsRoute)
-        setCurrGroupChatList(groupChats)
-        console.log(groupChats)
-      } catch (error) {
-        toast({
-          title: 'Error Occured!',
-          description: 'Failed to Load the chats',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-          position: 'bottom-left',
-        })
-      }
-
-      try {
         const { data: newGroupChats } = await axios.post(
           autoCreateGroupChatRoute,
           {
             groupNames: allCoursesSplit,
             users: JSON.stringify(currentUser._id),
             currUser: currentUser,
-            currGroupChatExist: currGroupChatList,
+            currGroupChatExist: groupChats,
           }
         )
-        console.log(newGroupChats)
         setChats(newGroupChats.concat(chats))
         const deduplicateMergedCourses = allCoursesSplit
           .concat(currGroupNameList)
@@ -151,9 +126,6 @@ function Signup() {
           position: 'bottom',
         })
       }
-
-      console.log(chats)
-      console.log(currGroupChatList)
     }
   }
 

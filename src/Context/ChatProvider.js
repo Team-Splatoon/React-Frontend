@@ -1,5 +1,4 @@
-import { useState, useEffect, useContext, createContext } from 'react'
-import { useNavigate } from 'react-router'
+import { useState, useContext, createContext } from 'react'
 
 const ChatContext = createContext()
 
@@ -8,9 +7,8 @@ const ChatProvider = ({ children }) => {
   const [selectedChat, setSelectedChat] = useState()
   const [chats, setChats] = useState([])
   const [currGroupNameList, setCurrGroupNameList] = useState([])
-  const [currGroupChatList, setCurrGroupChatList] = useState([])
   const [notification, setNotification] = useState([])
-  
+
   return (
     <ChatContext.Provider
       value={{
@@ -22,8 +20,6 @@ const ChatProvider = ({ children }) => {
         setChats,
         currGroupNameList,
         setCurrGroupNameList,
-        currGroupChatList,
-        setCurrGroupChatList,
         notification,
         setNotification,
       }}

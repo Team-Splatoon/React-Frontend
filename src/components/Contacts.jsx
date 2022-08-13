@@ -13,8 +13,6 @@ export default function Contacts({ fetchAgain, changeChat }) {
   const { currentUser, chats, setChats } = ChatState()
   const toast = useToast()
 
-  console.log(chats)
-
   const fetchChats = async () => {
     try {
       const { data } = await axios.get(fetchAllChatsRoute, {
@@ -36,7 +34,6 @@ export default function Contacts({ fetchAgain, changeChat }) {
   useEffect(() => {
     fetchChats()
   }, [fetchAgain])
-  console.log(chats)
 
   useEffect(() => {
     if (currentUser) {

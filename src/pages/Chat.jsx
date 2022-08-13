@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 import styled from 'styled-components'
-import axios from 'axios'
 import { useNavigate } from 'react-router'
 import { allUsersRoute, host } from '../utils/APIRoutes'
 import Contacts from '../components/Contacts'
@@ -15,8 +14,6 @@ import ChatLoading from '../components/ChatLoading'
 
 function Chat() {
   const socket = useRef(null)
-  // const ENDPOINT = "http://localhost:4000"
-  // const socket = io(ENDPOINT)
   const navigate = useNavigate()
   const { currentUser, setCurrentUser, selectedChat, setSelectedChat } =
     ChatState()
