@@ -38,7 +38,7 @@ function Signup() {
     email: '',
     password: '',
     confirmPassword: '',
-    identity: '--Select User Type--',
+    identity: '',
     coursesEnrolled: '',
     coursesTeach: '',
   })
@@ -186,6 +186,7 @@ function Signup() {
           <input
             type='text'
             placeholder='Full Name'
+            //correspond to the attribute name in the object of useState hook (event.target.name)
             name='fullName'
             onChange={(eve) => handleChange(eve)}
           />
@@ -216,7 +217,9 @@ function Signup() {
           <select
             name='identity'
             onChange={(eve) => handleChange(eve)}
+            // Set a default value of the event(independent from the value (attribute stored) of object in useState hook, and thus won't change the value of object in useState hook) by passing the value of the option in the value prop of the select input element (event.target.value). If wanna assotiated the select element with a useState hook, it is better to set value={state.attribute} to make it consistent and avoid unexpected outcome
             value={values.identity}
+            // By default, it shows the first option according to the order on display
           >
             <option value='--Select User Type--'>--Select User Type--</option>
             <option value='Student'>Student</option>
